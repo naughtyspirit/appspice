@@ -1,0 +1,12 @@
+.gradle/
+.idea/
+build/
+gen/
+bin/
+
+/local.properties
+/.idea/workspace.xml
+.DS_Store
+*.iml
+
+design/
