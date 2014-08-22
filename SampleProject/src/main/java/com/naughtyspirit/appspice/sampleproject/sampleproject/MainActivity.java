@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AppSpice.init(this, "4b5af6fcca338d1d441b", "53f1de0ee5f1b0a9515eef9b");
+        AppSpice.init(this);
         AppSpice.showAd(this);
 
         Button btn = (Button) findViewById(R.id.start_second_activity);
