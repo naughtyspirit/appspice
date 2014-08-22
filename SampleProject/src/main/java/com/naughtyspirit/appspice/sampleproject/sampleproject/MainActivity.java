@@ -3,7 +3,7 @@ package com.naughtyspirit.appspice.sampleproject.sampleproject;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.naughtyspirit.appspice.client.Appspice;
+import com.naughtyspirit.appspice.client.AppSpice;
 
 /**
  * Author: Atanas Dimitrov <seishin90@yandex.ru>
@@ -16,7 +16,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Appspice appspice = Appspice.getInstance(this);
-        appspice.init("", "");
+        AppSpice.init(this, "4b5af6fcca338d1d441b", "53f1de0ee5f1b0a9515eef9b");
+        AppSpice.showAd(this);
     }
 }

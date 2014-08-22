@@ -13,6 +13,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="DEV_ID"
+            android:value="4b5af6fcca338d1d441b" />
+        <meta-data
+            android:name="APP_ID"
+            android:value="susel" />
     </application>
 
 </manifest>
