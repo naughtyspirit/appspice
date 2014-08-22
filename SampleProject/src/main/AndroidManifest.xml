@@ -14,6 +14,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".SecondActivity" />
+
         <meta-data
             android:name="DEV_ID"
             android:value="4b5af6fcca338d1d441b" />

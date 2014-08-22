@@ -12,6 +12,7 @@ public class Constants {
 
     public static final String KEY_DEV_ID =  "DEV_ID";
     public static final String KEY_APP_ID =  "APP_ID";
+    public static final String KEY_IS_READY = "IS_READY";
 
     public static final String PREF_KEY_APPS = "APPSPICE_APPS";
 

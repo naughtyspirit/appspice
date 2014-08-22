@@ -1,10 +1,12 @@
 package com.naughtyspirit.appspice.client;
 
-import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
-import com.naughtyspirit.appspice.client.client.AppspiceClient;
 import com.naughtyspirit.appspice.client.ad_screens.SingleAdDialog;
+import com.naughtyspirit.appspice.client.client.AppspiceClient;
 import com.naughtyspirit.appspice.client.helpers.ConnectivityHelper;
 import com.naughtyspirit.appspice.client.helpers.Constants;
 import com.naughtyspirit.appspice.client.helpers.Log;
@@ -64,25 +66,46 @@ public class AppSpice {
     }
 
     public static void showAd(final Context ctx) {
-
-        ((Activity) ctx).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-
-                    while (cachedAds.getData().size() <= 0)
-                        Thread.sleep(1000);
-
-                    SingleAdDialog adDialog = new SingleAdDialog(ctx, cachedAds.getData().get(new Random().nextInt(cachedAds.getData().size())));
-                    adDialog.show();
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }
-        });
+        instance.ctx = ctx;
+        WaitForAdsThread waitForAdsThread = new WaitForAdsThread();
+        waitForAdsThread.start();
     }
 
     public static void cacheAds(Ads ads) {
         cachedAds = ads;
     }
+
+    private static class WaitForAdsThread extends Thread {
+
+        @Override
+        public void run() {
+            try {
+                while (cachedAds.getData().size() <= 0)
+                    Thread.sleep(1000);
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            notifyUIThread();
+        }
+
+        private void notifyUIThread() {
+            Message msgObj = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Constants.KEY_IS_READY, true);
+            msgObj.setData(bundle);
+            instance.handler.sendMessage(msgObj);
+        }
+    }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            if (msg.getData().getBoolean(Constants.KEY_IS_READY)) {
+                SingleAdDialog adDialog = new SingleAdDialog(ctx, cachedAds.getData().get(new Random().nextInt(cachedAds.getData().size())));
+                adDialog.show();
+            }
+        }
+    };
 }
