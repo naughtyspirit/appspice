@@ -35,15 +35,21 @@ public class AppSpice {
         this.ctx = ctx;
     }
 
-    public static void init(Context ctx, String devId, String appId) {
+    private static void newInstance(Context ctx) {
         if (instance == null) {
             instance = new AppSpice(ctx);
         }
+    }
+
+    public static void init(Context ctx, String devId, String appId) {
+        newInstance(ctx);
 
         instance.initAppSpice(devId, appId);
     }
 
     public static void init(Context ctx) {
+        newInstance(ctx);
+
         String devId = MetaDataHelper.getMetaData(ctx, Constants.KEY_DEV_ID);
         String appId = MetaDataHelper.getMetaData(ctx, Constants.KEY_APP_ID);
 
