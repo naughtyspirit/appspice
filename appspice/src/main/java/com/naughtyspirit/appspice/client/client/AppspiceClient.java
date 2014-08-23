@@ -1,5 +1,7 @@
 package com.naughtyspirit.appspice.client.client;
 
+import android.content.Context;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -8,10 +10,14 @@ import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.WebSocket;
 import com.naughtyspirit.appspice.client.client.events.Event;
-import com.naughtyspirit.appspice.client.client.requests.GetAds;
+import com.naughtyspirit.appspice.client.client.requests.CreateUser;
+import com.naughtyspirit.appspice.client.client.requests.GetAdApps;
 import com.naughtyspirit.appspice.client.client.responses.Response;
 import com.naughtyspirit.appspice.client.helpers.Constants;
 import com.naughtyspirit.appspice.client.helpers.Log;
+import com.naughtyspirit.appspice.client.providers.InstalledAppsProvider;
+
+import java.util.List;
 
 /**
  * Created by NaughtySpirit
@@ -25,10 +31,15 @@ public class AppspiceClient {
 
     private String devId;
     private String appId;
+    private String userId;
 
-    public AppspiceClient(String devId, String appId) {
+    private Context ctx;
+
+    public AppspiceClient(Context ctx, String devId, String appId, String userId) {
+        this.ctx = ctx;
         this.devId = devId;
         this.appId = appId;
+        this.userId = userId;
 
         try {
             initConnection();
@@ -54,6 +65,7 @@ public class AppspiceClient {
     private void onConnectionEstablished(WebSocket webSocket) {
         this.webSocket = webSocket;
 
+        createUser(InstalledAppsProvider.installedApps(ctx.getPackageManager()));
         getAds();
 
         Log.d("websocket", "established!");
@@ -102,6 +114,11 @@ public class AppspiceClient {
     }
 
     public void getAds() {
-        send(GetAds.EVENT_NAME, new GetAds(devId, appId));
+        send(GetAdApps.EVENT_NAME, new GetAdApps(devId, appId, userId));
+    }
+
+    public void createUser(List<String> installedApps) {
+        CreateUser createUser = new CreateUser(userId, installedApps);
+        send(CreateUser.EVENT_NAME, createUser);
     }
 }

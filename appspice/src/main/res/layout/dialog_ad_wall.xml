@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/close"
+        android:layout_width="@dimen/close_btn_size"
+        android:layout_height="@dimen/close_btn_size"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/close_symbol"
+        android:textSize="@dimen/close_btn_text"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:background="@android:color/transparent" />
+
+    <ListView
+        android:id="@+id/ads_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/wall_ad_list_margin" />
+</RelativeLayout>

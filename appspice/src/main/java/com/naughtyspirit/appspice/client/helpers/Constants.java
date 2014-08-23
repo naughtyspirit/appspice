@@ -16,4 +16,5 @@ public class Constants {
 
     public static final String PREF_KEY_APPS = "APPSPICE_APPS";
 
+    public enum AdTypes {FullScreen, Wall, Grid, Banner}
 }

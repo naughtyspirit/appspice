@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * Created by NaughtySpirit
  * Created on 21/Aug/2014
  */
-public class GetAdsResponse extends BaseResponse {
+public class GetAdAppsResponse extends BaseResponse {
 
     @Override
     public void onData(JsonElement data) {

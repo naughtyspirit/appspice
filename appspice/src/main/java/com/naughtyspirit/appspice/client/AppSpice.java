@@ -1,19 +1,20 @@
 package com.naughtyspirit.appspice.client;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.app.Activity;
 
-import com.naughtyspirit.appspice.client.ad_screens.SingleAdDialog;
 import com.naughtyspirit.appspice.client.client.AppspiceClient;
 import com.naughtyspirit.appspice.client.helpers.ConnectivityHelper;
 import com.naughtyspirit.appspice.client.helpers.Constants;
+import com.naughtyspirit.appspice.client.helpers.Constants.AdTypes;
 import com.naughtyspirit.appspice.client.helpers.Log;
 import com.naughtyspirit.appspice.client.helpers.MetaDataHelper;
 import com.naughtyspirit.appspice.client.models.Ads;
+import com.naughtyspirit.appspice.client.providers.UniqueIdProvider;
+import com.naughtyspirit.appspice.client.providers.ads.AdProvider;
+import com.naughtyspirit.appspice.client.providers.ads.AppSpiceAdProvider;
 
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -25,29 +26,43 @@ public class AppSpice {
     private static final String TAG = "Appspice";
 
     private static AppspiceClient client;
-    private Context ctx;
+    private Activity ctx;
 
     private static AppSpice instance;
+    private Map<String, AdProvider> adProviders = new HashMap<String, AdProvider>();
 
-    private static Ads cachedAds = new Ads();
+    private String userId;
 
-    private AppSpice(Context ctx) {
+    private AppSpice(Activity ctx) {
         this.ctx = ctx;
     }
 
-    private static void newInstance(Context ctx) {
+    private static void newInstance(Activity ctx) {
         if (instance == null) {
             instance = new AppSpice(ctx);
         }
+
+        instance.ctx = ctx;
+
+        instance.initAdProviders();
+
+        final UniqueIdProvider idProvider = new UniqueIdProvider(ctx, new UniqueIdProvider.OnUniqueIdAvailable() {
+            @Override
+            public void onUniqueId(String uniqueId) {
+//                AdSpice.this.userId = uniqueId;
+
+            }
+        });
+        instance.userId = idProvider.generateDeviceId();
     }
 
-    public static void init(Context ctx, String devId, String appId) {
+    public static void init(Activity ctx, String devId, String appId) {
         newInstance(ctx);
 
         instance.initAppSpice(devId, appId);
     }
 
-    public static void init(Context ctx) {
+    public static void init(Activity ctx) {
         newInstance(ctx);
 
         String devId = MetaDataHelper.getMetaData(ctx, Constants.KEY_DEV_ID);
@@ -68,50 +83,29 @@ public class AppSpice {
             return;
         }
 
-        client = new AppspiceClient(devId, appId);
+        client = new AppspiceClient(ctx, devId, appId, userId);
     }
 
-    public static void showAd(final Context ctx) {
+    public static void showAd(final Activity ctx) {
         instance.ctx = ctx;
-        WaitForAdsThread waitForAdsThread = new WaitForAdsThread();
-        waitForAdsThread.start();
+
+        instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME).showAd(ctx, AdTypes.FullScreen);
+    }
+
+    public static void showAd(final Activity ctx, AdTypes type) {
+        instance.ctx = ctx;
+
+        instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME).showAd(ctx, type);
     }
 
     public static void cacheAds(Ads ads) {
-        cachedAds = ads;
+        AppSpiceAdProvider.cacheAds(ads);
     }
 
-    private static class WaitForAdsThread extends Thread {
-
-        @Override
-        public void run() {
-            try {
-                while (cachedAds.getData().size() <= 0)
-                    Thread.sleep(1000);
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-            }
-
-            notifyUIThread();
-        }
-
-        private void notifyUIThread() {
-            Message msgObj = new Message();
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(Constants.KEY_IS_READY, true);
-            msgObj.setData(bundle);
-            instance.handler.sendMessage(msgObj);
+    private void initAdProviders() {
+        adProviders.put(AppSpiceAdProvider.PROVIDER_NAME, new AppSpiceAdProvider());
+        for(Map.Entry<String, AdProvider> entry: adProviders.entrySet()) {
+            entry.getValue().onCreate(instance.ctx);
         }
     }
-
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-
-            if (msg.getData().getBoolean(Constants.KEY_IS_READY)) {
-                SingleAdDialog adDialog = new SingleAdDialog(ctx, cachedAds.getData().get(new Random().nextInt(cachedAds.getData().size())));
-                adDialog.show();
-            }
-        }
-    };
 }

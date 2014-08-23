@@ -1,7 +1,6 @@
-package com.naughtyspirit.appspice.client.ad_screens;
+package com.naughtyspirit.appspice.client.ui.dialogs;
 
 
-import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
@@ -16,26 +15,24 @@ import com.naughtyspirit.appspice.client.models.Ad;
  * Created by NaughtySpirit
  * Created on 22/Aug/2014
  */
-public class SingleAdDialog extends Dialog {
+public class FullScreenAd extends BaseAdDialog {
 
-    private Context ctx;
     private Ad ad;
 
-    public SingleAdDialog(Context ctx, Ad ad) {
-        super(ctx, R.style.SingleAppDialog);
+    public FullScreenAd(Context ctx, Ad ad) {
+        super(ctx, R.style.FullscreenAdDialog);
 
-        this.ctx = ctx;
         this.ad = ad;
 
         initUI();
     }
 
     public void initUI() {
-        setContentView(R.layout.dialog_single_ad);
+        setContentView(R.layout.dialog_ad_fullscreen);
 
         ((TextView) findViewById(R.id.title)).setText(ad.getName());
 
-        Ion.with(ctx)
+        Ion.with(getContext())
                 .load(ad.getIconUrl())
                 .intoImageView((ImageView) findViewById(R.id.icon));
 

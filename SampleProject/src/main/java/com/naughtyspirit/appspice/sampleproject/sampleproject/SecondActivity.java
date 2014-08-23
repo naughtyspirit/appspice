@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.naughtyspirit.appspice.client.AppSpice;
+import com.naughtyspirit.appspice.client.helpers.Constants;
 
 /**
  * Created by NaughtySpirit
@@ -16,6 +17,6 @@ public class SecondActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        AppSpice.showAd(this);
+        AppSpice.showAd(this, Constants.AdTypes.Wall);
     }
 }
