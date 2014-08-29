@@ -11,8 +11,11 @@ import android.widget.TextView;
 
 import com.koushikdutta.ion.Ion;
 import com.naughtyspirit.appspice.client.R;
+import com.naughtyspirit.appspice.client.client.AppspiceClient;
+import com.naughtyspirit.appspice.client.helpers.Constants.AdTypes;
 import com.naughtyspirit.appspice.client.models.Ad;
 import com.naughtyspirit.appspice.client.models.Ads;
+import com.naughtyspirit.appspice.client.providers.ads.AppSpiceAdProvider;
 
 /**
  * Created by NaughtySpirit
@@ -64,6 +67,13 @@ public class WallAdAdapter extends BaseAdapter {
         Ion.with(ctx)
                 .load(ad.getIconUrl())
                 .intoImageView(holder.icon);
+
+        holder.install.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AppspiceClient.sendAdClickEvent(AppSpiceAdProvider.PROVIDER_NAME, AdTypes.Wall.toString());
+            }
+        });
     }
 
     @Override

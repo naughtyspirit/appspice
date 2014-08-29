@@ -3,13 +3,14 @@ package com.naughtyspirit.appspice.client;
 import android.app.Activity;
 
 import com.naughtyspirit.appspice.client.client.AppspiceClient;
+import com.naughtyspirit.appspice.client.client.OnAppSpiceReadyListener;
 import com.naughtyspirit.appspice.client.helpers.ConnectivityHelper;
 import com.naughtyspirit.appspice.client.helpers.Constants;
 import com.naughtyspirit.appspice.client.helpers.Constants.AdTypes;
 import com.naughtyspirit.appspice.client.helpers.Log;
 import com.naughtyspirit.appspice.client.helpers.MetaDataHelper;
 import com.naughtyspirit.appspice.client.models.Ads;
-import com.naughtyspirit.appspice.client.providers.UniqueIdProvider;
+import com.naughtyspirit.appspice.client.providers.InstalledAppsProvider;
 import com.naughtyspirit.appspice.client.providers.ads.AdProvider;
 import com.naughtyspirit.appspice.client.providers.ads.AppSpiceAdProvider;
 
@@ -45,15 +46,6 @@ public class AppSpice {
         instance.ctx = ctx;
 
         instance.initAdProviders();
-
-        final UniqueIdProvider idProvider = new UniqueIdProvider(ctx, new UniqueIdProvider.OnUniqueIdAvailable() {
-            @Override
-            public void onUniqueId(String uniqueId) {
-//                AdSpice.this.userId = uniqueId;
-
-            }
-        });
-        instance.userId = idProvider.generateDeviceId();
     }
 
     public static void init(Activity ctx, String devId, String appId) {
@@ -83,18 +75,21 @@ public class AppSpice {
             return;
         }
 
-        client = new AppspiceClient(ctx, devId, appId, userId);
+        client = new AppspiceClient(ctx, devId, appId, userId, new OnAppSpiceReadyListener() {
+            @Override
+            public void onReady() {
+                client.createUser(InstalledAppsProvider.installedApps(ctx.getPackageManager()));
+            }
+        });
     }
 
     public static void showAd(final Activity ctx) {
         instance.ctx = ctx;
-
         instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME).showAd(ctx, AdTypes.FullScreen);
     }
 
-    public static void showAd(final Activity ctx, AdTypes type) {
+    public static void showAd(final Activity ctx, final AdTypes type) {
         instance.ctx = ctx;
-
         instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME).showAd(ctx, type);
     }
 
@@ -104,7 +99,7 @@ public class AppSpice {
 
     private void initAdProviders() {
         adProviders.put(AppSpiceAdProvider.PROVIDER_NAME, new AppSpiceAdProvider());
-        for(Map.Entry<String, AdProvider> entry: adProviders.entrySet()) {
+        for (Map.Entry<String, AdProvider> entry : adProviders.entrySet()) {
             entry.getValue().onCreate(instance.ctx);
         }
     }

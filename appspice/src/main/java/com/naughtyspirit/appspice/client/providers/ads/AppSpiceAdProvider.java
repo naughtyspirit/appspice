@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import com.naughtyspirit.appspice.client.ui.dialogs.BaseAdDialog;
-import com.naughtyspirit.appspice.client.ui.dialogs.FullScreenAd;
 import com.naughtyspirit.appspice.client.helpers.Constants;
 import com.naughtyspirit.appspice.client.helpers.Constants.AdTypes;
 import com.naughtyspirit.appspice.client.helpers.Log;
 import com.naughtyspirit.appspice.client.models.Ads;
+import com.naughtyspirit.appspice.client.ui.dialogs.BaseAdDialog;
+import com.naughtyspirit.appspice.client.ui.dialogs.FullScreenAd;
 import com.naughtyspirit.appspice.client.ui.dialogs.WallAd;
 
 import java.util.Random;
@@ -21,7 +21,7 @@ import java.util.Random;
  * Created on 23/Aug/2014
  */
 public class AppSpiceAdProvider extends BaseAdProvider {
-    public static final String PROVIDER_NAME = "adspice";
+    public static final String PROVIDER_NAME = "appspice";
 
     private static Ads cachedAds = new Ads();
     private Context ctx;

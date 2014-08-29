@@ -5,8 +5,14 @@ import android.os.AsyncTask;
 import android.os.Build;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.naughtyspirit.appspice.client.helpers.Log;
+
+import java.io.IOException;
 
 /**
  * Created by NaughtySpirit
@@ -14,20 +20,31 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
  */
 public class UniqueIdProvider {
 
+    public static final String TAG = "client.providers.UniqueIdProvider";
+
     private final OnUniqueIdAvailable listener;
-    private Context context;
+    private Context ctx;
 
     private AsyncTask<Void, Void, String> requestIdTask = new AsyncTask<Void, Void, String>() {
 
         @Override
         protected String doInBackground(Void... voids) {
-            AdvertisingIdClient.Info adInfo = null;
+            Info adInfo = null;
+
             try {
-                adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
-                return adInfo.getId();
-            } catch (Exception e) {
-                return generateDeviceId();
+                adInfo = AdvertisingIdClient.getAdvertisingIdInfo(ctx);
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
+            } catch (GooglePlayServicesNotAvailableException e) {
+                Log.e(TAG, e.getMessage());
+            } catch (GooglePlayServicesRepairableException e) {
+                Log.e(TAG, e.getMessage());
             }
+
+            final String id = adInfo.getId();
+            final boolean isLAT = adInfo.isLimitAdTrackingEnabled();
+
+            return id;
         }
 
         @Override
@@ -36,13 +53,13 @@ public class UniqueIdProvider {
         }
     };
 
-    public UniqueIdProvider(Context context, OnUniqueIdAvailable listener) {
-        this.context = context;
+    public UniqueIdProvider(Context ctx, OnUniqueIdAvailable listener) {
+        this.ctx = ctx;
         this.listener = listener;
     }
 
     public void requestId() {
-        int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
+        int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(ctx);
         if (result != ConnectionResult.SUCCESS) {
             listener.onUniqueId(generateDeviceId());
         } else {
