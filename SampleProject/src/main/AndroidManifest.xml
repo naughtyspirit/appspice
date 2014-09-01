@@ -15,13 +15,6 @@
         </activity>
 
         <activity android:name=".SecondActivity" />
-
-        <meta-data
-            android:name="DEV_ID"
-            android:value="4c8f0b7596bea5604e05" />
-        <meta-data
-            android:name="APP_ID"
-            android:value="53f9cdf4a81be373426fbaf9" />
     </application>
 
 </manifest>

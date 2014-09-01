@@ -17,7 +17,6 @@ import com.naughtyspirit.appspice.client.client.responses.Response;
 import com.naughtyspirit.appspice.client.helpers.Constants;
 import com.naughtyspirit.appspice.client.helpers.Log;
 import com.naughtyspirit.appspice.client.providers.UniqueIdProvider;
-import com.squareup.otto.Bus;
 
 import java.util.List;
 
@@ -40,8 +39,6 @@ public class AppspiceClient {
 
     private OnAppSpiceReadyListener readyListener;
 
-    private static Bus bus = new Bus();
-
     private static AppspiceClient instance;
 
     public AppspiceClient(Context ctx, String devId, String appId, String userId, OnAppSpiceReadyListener readyListener) {
@@ -53,33 +50,31 @@ public class AppspiceClient {
 
         instance = this;
 
-        try {
-            initConnection();
-        } catch (NullPointerException e) {
-            Log.e("WebSocket Exception", e.getMessage());
-        }
-
-        bus.register(this);
+        initConnection();
     }
 
-    private void initConnection() throws NullPointerException {
-        AsyncHttpClient.getDefaultInstance().websocket(Constants.API_ENDPOINT, Constants.API_PROTOCOL, new AsyncHttpClient.WebSocketConnectCallback() {
-            @Override
-            public void onCompleted(Exception ex, WebSocket webSocket) {
-                if (ex != null) {
-                    Log.e(TAG, "Cannot establish a connection");
-                    return;
-                }
+    private void initConnection() {
+        try {
+            AsyncHttpClient.getDefaultInstance().websocket(Constants.API_ENDPOINT, Constants.API_PROTOCOL, new AsyncHttpClient.WebSocketConnectCallback() {
+                @Override
+                public void onCompleted(Exception ex, WebSocket webSocket) {
+                    if (ex != null) {
+                        Log.e(TAG, "Cannot establish a connection");
+                        return;
+                    }
 
-                onConnectionEstablished(webSocket);
-            }
-        });
+                    onConnectionEstablished(webSocket);
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     private void onConnectionEstablished(WebSocket webSocket) {
         this.webSocket = webSocket;
 
-        Log.d("websocket", "established!");
+        Log.e("websocket", String.valueOf(webSocket.isOpen()));
 
         webSocket.setStringCallback(new WebSocket.StringCallback() {
             @Override
@@ -107,15 +102,14 @@ public class AppspiceClient {
 
     private void send(String name, Object data) {
         try {
-            if (!name.isEmpty() || data != null)
-                webSocket.send(new Event(name, data).toJSON());
+            webSocket.send(new Event(name, data).toJSON());
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
     }
 
     private void onStringMsgReceived(String str) {
-        Log.d("data", str);
+        Log.e("data", str);
 
         JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
         JsonArray jsonArray = jsonObject.getAsJsonArray("data");
@@ -136,6 +130,7 @@ public class AppspiceClient {
     }
 
     public void createUser(final List<String> installedApps) {
+        Log.e(TAG, String.valueOf(installedApps.size()));
         final UniqueIdProvider idProvider = new UniqueIdProvider(ctx, new UniqueIdProvider.OnUniqueIdAvailable() {
             @Override
             public void onUniqueId(String uniqueId) {

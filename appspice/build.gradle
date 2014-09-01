@@ -17,25 +17,49 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        main {
+            java {
+                srcDir 'src/main/java'
+            }
+            resources {
+                srcDir 'src/../lib'
+            }
+        }
+    }
 }
+
+//task clearJar(type: Delete) {
+//    delete 'build/outputs/ProjectName.jar'
+//}
+//
+//task makeJar(type: Copy) {
+//    from('build/intermediates/bundles/release/')
+//    into('build/outputs/')
+//    include('classes.jar')
+//    rename('classes.jar', 'appspice.jar')
+//}
 
 task clearJar(type: Delete) {
     delete 'build/outputs/ProjectName.jar'
 }
 
 task makeJar(type: Copy) {
-    from('build/intermediates/bundles/release/')
-    into('build/outputs/')
+    from('build/bundles/release/')
+    into('release/')
     include('classes.jar')
-    rename ('classes.jar', 'AppSpiceSDK.jar')
+    rename('classes.jar', 'appspice.jar')
 }
+
+makeJar.dependsOn(clearJar, build)
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.koushikdutta.async:androidasync:+'
-    compile 'com.google.code.gson:gson:+'
-    compile 'com.squareup:otto:+'
     compile 'com.koushikdutta.ion:ion:1.3.7'
     compile 'com.google.android.gms:play-services:5.2.08'
+    compile 'com.google.code.gson:gson:2.3'
 }

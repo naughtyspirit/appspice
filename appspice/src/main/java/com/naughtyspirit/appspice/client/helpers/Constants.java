@@ -10,11 +10,9 @@ public class Constants {
     public static final String API_ENDPOINT = "ws://appspice-server.herokuapp.com/primus";//"ws://10.0.2.2:8080/primus";
     public static final String API_PROTOCOL = "ws";
 
-    public static final String KEY_DEV_ID =  "DEV_ID";
-    public static final String KEY_APP_ID =  "APP_ID";
+    public static final String KEY_DEV_ID =  "APPSPICE_DEV_ID";
+    public static final String KEY_APP_ID =  "APPSPICE_APP_ID";
     public static final String KEY_IS_READY = "IS_READY";
-
-    public static final String PREF_KEY_APPS = "APPSPICE_APPS";
 
     public enum AdTypes {FullScreen, Wall, Grid, Banner}
 }

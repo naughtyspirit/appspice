@@ -14,7 +14,9 @@ import com.naughtyspirit.appspice.client.providers.InstalledAppsProvider;
 import com.naughtyspirit.appspice.client.providers.ads.AdProvider;
 import com.naughtyspirit.appspice.client.providers.ads.AppSpiceAdProvider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -78,7 +80,9 @@ public class AppSpice {
         client = new AppspiceClient(ctx, devId, appId, userId, new OnAppSpiceReadyListener() {
             @Override
             public void onReady() {
-                client.createUser(InstalledAppsProvider.installedApps(ctx.getPackageManager()));
+                List<String> apps = InstalledAppsProvider.installedApps(ctx.getPackageManager());
+                Log.e(TAG, String.valueOf(apps.size()));
+                client.createUser(apps);
             }
         });
     }
@@ -86,11 +90,6 @@ public class AppSpice {
     public static void showAd(final Activity ctx) {
         instance.ctx = ctx;
         instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME).showAd(ctx, AdTypes.FullScreen);
-    }
-
-    public static void showAd(final Activity ctx, final AdTypes type) {
-        instance.ctx = ctx;
-        instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME).showAd(ctx, type);
     }
 
     public static void cacheAds(Ads ads) {
