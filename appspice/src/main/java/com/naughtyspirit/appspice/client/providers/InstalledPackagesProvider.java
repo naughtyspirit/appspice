@@ -10,9 +10,9 @@ import java.util.List;
  * Created by NaughtySpirit
  * Created on 23/Aug/2014
  */
-public class InstalledAppsProvider {
+public class InstalledPackagesProvider {
 
-    public static List<String> installedApps(PackageManager packageManager) {
+    public static List<String> installedPackages(PackageManager packageManager) {
         List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
         List<String> installedPackages = new ArrayList<String>();
         for (ApplicationInfo applicationInfo : packages) {

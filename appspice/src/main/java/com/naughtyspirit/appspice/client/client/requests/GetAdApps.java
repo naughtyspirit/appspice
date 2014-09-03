@@ -7,12 +7,12 @@ package com.naughtyspirit.appspice.client.client.requests;
 public class GetAdApps {
 
     public static final String EVENT_NAME = GetAdApps.class.getSimpleName();
-    private final String devId;
+    private final String appSpiceId;
     private final String appId;
     private final String userId;
 
-    public GetAdApps(String devId, String appId, String userId) {
-        this.devId = devId;
+    public GetAdApps(String appSpiceId, String appId, String userId) {
+        this.appSpiceId = appSpiceId;
         this.appId = appId;
         this.userId = userId;
     }

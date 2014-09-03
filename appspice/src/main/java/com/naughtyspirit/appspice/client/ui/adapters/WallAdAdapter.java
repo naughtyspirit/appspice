@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.koushikdutta.ion.Ion;
 import com.naughtyspirit.appspice.client.R;
-import com.naughtyspirit.appspice.client.client.AppspiceClient;
+import com.naughtyspirit.appspice.client.client.AppSpiceClient;
 import com.naughtyspirit.appspice.client.helpers.Constants.AdTypes;
 import com.naughtyspirit.appspice.client.models.Ad;
 import com.naughtyspirit.appspice.client.models.Ads;
@@ -71,7 +71,7 @@ public class WallAdAdapter extends BaseAdapter {
         holder.install.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AppspiceClient.sendAdClickEvent(AppSpiceAdProvider.PROVIDER_NAME, AdTypes.Wall.toString());
+                AppSpiceClient.sendAdClickEvent(AppSpiceAdProvider.PROVIDER_NAME, AdTypes.Wall.toString());
             }
         });
     }

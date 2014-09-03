@@ -24,28 +24,25 @@ import java.util.List;
  * Created by NaughtySpirit
  * Created on 20/Aug/2014
  */
-public class AppspiceClient {
+public class AppSpiceClient {
 
-    public static final String TAG = "client.AppspiceClient";
-
-    private static final String APPSPICE_NAMESPACE = "appspice";
+    public static final String TAG = "client.AppSpiceClient";
 
     private WebSocket webSocket;
-    private Context ctx;
+    private Context context;
 
-    private String devId;
+    private String appSpiceId;
     private String appId;
     private String userId;
 
     private OnAppSpiceReadyListener readyListener;
 
-    private static AppspiceClient instance;
+    private static AppSpiceClient instance;
 
-    public AppspiceClient(Context ctx, String devId, String appId, String userId, OnAppSpiceReadyListener readyListener) {
-        this.ctx = ctx;
-        this.devId = devId;
+    public AppSpiceClient(Context context, String appSpiceId, String appId, OnAppSpiceReadyListener readyListener) {
+        this.context = context;
+        this.appSpiceId = appSpiceId;
         this.appId = appId;
-        this.userId = userId;
         this.readyListener = readyListener;
 
         instance = this;
@@ -126,16 +123,16 @@ public class AppspiceClient {
     }
 
     public void getAds() {
-        send(GetAdApps.EVENT_NAME, new GetAdApps(devId, appId, userId));
+        send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, userId));
     }
 
-    public void createUser(final List<String> installedApps) {
-        Log.e(TAG, String.valueOf(installedApps.size()));
-        final UniqueIdProvider idProvider = new UniqueIdProvider(ctx, new UniqueIdProvider.OnUniqueIdAvailable() {
+    public void createUser(final List<String> installedPackages) {
+        Log.e(TAG, String.valueOf(installedPackages.size()));
+        final UniqueIdProvider idProvider = new UniqueIdProvider(context, new UniqueIdProvider.OnUniqueIdAvailable() {
             @Override
             public void onUniqueId(String uniqueId) {
                 userId = uniqueId;
-                CreateUser createUser = new CreateUser(uniqueId, installedApps);
+                CreateUser createUser = new CreateUser(uniqueId, installedPackages);
                 send(CreateUser.EVENT_NAME, createUser);
 
                 getAds();
@@ -155,6 +152,6 @@ public class AppspiceClient {
     }
 
     private void sendUpdateCounterEvent(String name) {
-        send(UpdateCounter.EVENT_NAME, new UpdateCounter(appId, devId, name, userId));
+        send(UpdateCounter.EVENT_NAME, new UpdateCounter(appId, appSpiceId, name, userId));
     }
 }

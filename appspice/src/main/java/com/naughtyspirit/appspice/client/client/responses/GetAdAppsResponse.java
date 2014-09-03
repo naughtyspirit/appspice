@@ -3,7 +3,6 @@ package com.naughtyspirit.appspice.client.client.responses;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import com.naughtyspirit.appspice.client.AppSpice;
-import com.naughtyspirit.appspice.client.client.AppspiceClient;
 import com.naughtyspirit.appspice.client.models.Ad;
 import com.naughtyspirit.appspice.client.models.Ads;
 

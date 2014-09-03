@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.naughtyspirit.appspice.client.R;
-import com.naughtyspirit.appspice.client.client.AppspiceClient;
+import com.naughtyspirit.appspice.client.client.AppSpiceClient;
 import com.naughtyspirit.appspice.client.helpers.BlurBackgroundHelper;
 import com.naughtyspirit.appspice.client.helpers.Constants.AdTypes;
 import com.naughtyspirit.appspice.client.models.Ads;
@@ -31,7 +31,7 @@ public class WallAd extends BaseAdDialog {
         this.ads = ads;
 
         initUI();
-        AppspiceClient.sendAdImpressionEvent(AppSpiceAdProvider.PROVIDER_NAME, AdTypes.Wall.toString());
+        AppSpiceClient.sendAdImpressionEvent(AppSpiceAdProvider.PROVIDER_NAME, AdTypes.Wall.toString());
     }
 
     public void initUI() {

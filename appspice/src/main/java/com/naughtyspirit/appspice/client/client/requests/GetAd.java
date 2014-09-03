@@ -6,11 +6,11 @@ package com.naughtyspirit.appspice.client.client.requests;
  */
 public class GetAd {
     public static final String EVENT_NAME = GetAd.class.getSimpleName();
-    private final String devId;
+    private final String appSpiceId;
     private final String appId;
 
-    public GetAd(String devId, String appId) {
-        this.devId = devId;
+    public GetAd(String appSpiceId, String appId) {
+        this.appSpiceId = appSpiceId;
         this.appId = appId;
     }
 }

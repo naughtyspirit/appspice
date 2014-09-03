@@ -1,10 +1,7 @@
 package com.naughtyspirit.appspice.client.ui.dialogs;
 
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,8 +9,7 @@ import android.widget.TextView;
 
 import com.koushikdutta.ion.Ion;
 import com.naughtyspirit.appspice.client.R;
-import com.naughtyspirit.appspice.client.client.AppspiceClient;
-import com.naughtyspirit.appspice.client.helpers.BlurBackgroundHelper;
+import com.naughtyspirit.appspice.client.client.AppSpiceClient;
 import com.naughtyspirit.appspice.client.helpers.Constants.AdTypes;
 import com.naughtyspirit.appspice.client.models.Ad;
 import com.naughtyspirit.appspice.client.providers.ads.AppSpiceAdProvider;
@@ -35,7 +31,7 @@ public class FullScreenAd extends BaseAdDialog {
 
         initUI();
 
-        AppspiceClient.sendAdImpressionEvent(AppSpiceAdProvider.PROVIDER_NAME, AdTypes.FullScreen.toString());
+        AppSpiceClient.sendAdImpressionEvent(AppSpiceAdProvider.PROVIDER_NAME, AdTypes.FullScreen.toString());
     }
 
     public void initUI() {
@@ -61,7 +57,7 @@ public class FullScreenAd extends BaseAdDialog {
         install.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AppspiceClient.sendAdClickEvent(AppSpiceAdProvider.PROVIDER_NAME, AdTypes.FullScreen.toString());
+                AppSpiceClient.sendAdClickEvent(AppSpiceAdProvider.PROVIDER_NAME, AdTypes.FullScreen.toString());
             }
         });
     }

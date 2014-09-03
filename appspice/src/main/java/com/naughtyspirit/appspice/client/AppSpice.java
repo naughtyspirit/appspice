@@ -2,7 +2,7 @@ package com.naughtyspirit.appspice.client;
 
 import android.app.Activity;
 
-import com.naughtyspirit.appspice.client.client.AppspiceClient;
+import com.naughtyspirit.appspice.client.client.AppSpiceClient;
 import com.naughtyspirit.appspice.client.client.OnAppSpiceReadyListener;
 import com.naughtyspirit.appspice.client.helpers.ConnectivityHelper;
 import com.naughtyspirit.appspice.client.helpers.Constants;
@@ -10,11 +10,10 @@ import com.naughtyspirit.appspice.client.helpers.Constants.AdTypes;
 import com.naughtyspirit.appspice.client.helpers.Log;
 import com.naughtyspirit.appspice.client.helpers.MetaDataHelper;
 import com.naughtyspirit.appspice.client.models.Ads;
-import com.naughtyspirit.appspice.client.providers.InstalledAppsProvider;
+import com.naughtyspirit.appspice.client.providers.InstalledPackagesProvider;
 import com.naughtyspirit.appspice.client.providers.ads.AdProvider;
 import com.naughtyspirit.appspice.client.providers.ads.AppSpiceAdProvider;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +27,11 @@ public class AppSpice {
 
     private static final String TAG = "Appspice";
 
-    private static AppspiceClient client;
+    private static AppSpiceClient client;
     private Activity ctx;
 
     private static AppSpice instance;
     private Map<String, AdProvider> adProviders = new HashMap<String, AdProvider>();
-
-    private String userId;
 
     private AppSpice(Activity ctx) {
         this.ctx = ctx;
@@ -50,25 +47,25 @@ public class AppSpice {
         instance.initAdProviders();
     }
 
-    public static void init(Activity ctx, String devId, String appId) {
+    public static void init(Activity ctx, String appSpiceId, String appId) {
         newInstance(ctx);
 
-        instance.initAppSpice(devId, appId);
+        instance.initAppSpice(appSpiceId, appId);
     }
 
     public static void init(Activity ctx) {
         newInstance(ctx);
 
-        String devId = MetaDataHelper.getMetaData(ctx, Constants.KEY_DEV_ID);
+        String appSpiceId = MetaDataHelper.getMetaData(ctx, Constants.KEY_APP_SPICE_ID);
         String appId = MetaDataHelper.getMetaData(ctx, Constants.KEY_APP_ID);
 
-        instance.initAppSpice(devId, appId);
+        instance.initAppSpice(appSpiceId, appId);
     }
 
-    private void initAppSpice(String devId, String appId) {
+    private void initAppSpice(String appSpiceId, String appId) {
 
-        if (devId.isEmpty() || appId.isEmpty()) {
-            Log.e(TAG, "DEV_ID or APP_ID is empty.");
+        if (appSpiceId.isEmpty() || appId.isEmpty()) {
+            Log.e(TAG, "APP_SPICE_ID or APP_SPICE_APP_ID is empty.");
             return;
         }
 
@@ -77,12 +74,12 @@ public class AppSpice {
             return;
         }
 
-        client = new AppspiceClient(ctx, devId, appId, userId, new OnAppSpiceReadyListener() {
+        client = new AppSpiceClient(ctx, appSpiceId, appId, new OnAppSpiceReadyListener() {
             @Override
             public void onReady() {
-                List<String> apps = InstalledAppsProvider.installedApps(ctx.getPackageManager());
-                Log.e(TAG, String.valueOf(apps.size()));
-                client.createUser(apps);
+                List<String> packages = InstalledPackagesProvider.installedPackages(ctx.getPackageManager());
+                Log.e(TAG, String.valueOf(packages.size()));
+                client.createUser(packages);
             }
         });
     }
@@ -93,6 +90,7 @@ public class AppSpice {
     }
 
     public static void cacheAds(Ads ads) {
+        System.err.println("Ad " + ads.getData().size());
         AppSpiceAdProvider.cacheAds(ads);
     }
 
