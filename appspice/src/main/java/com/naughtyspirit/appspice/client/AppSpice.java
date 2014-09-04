@@ -1,6 +1,7 @@
 package com.naughtyspirit.appspice.client;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 import com.naughtyspirit.appspice.client.client.AppSpiceClient;
 import com.naughtyspirit.appspice.client.client.OnAppSpiceReadyListener;
@@ -64,7 +65,7 @@ public class AppSpice {
 
     private void initAppSpice(String appSpiceId, String appId) {
 
-        if (appSpiceId.isEmpty() || appId.isEmpty()) {
+        if (TextUtils.isEmpty(appSpiceId) || TextUtils.isEmpty(appId)) {
             Log.e(TAG, "APP_SPICE_ID or APP_SPICE_APP_ID is empty.");
             return;
         }
