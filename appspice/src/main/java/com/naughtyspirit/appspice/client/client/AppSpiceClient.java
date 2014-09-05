@@ -1,6 +1,7 @@
 package com.naughtyspirit.appspice.client.client;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -17,6 +18,7 @@ import com.naughtyspirit.appspice.client.client.responses.Response;
 import com.naughtyspirit.appspice.client.helpers.Constants;
 import com.naughtyspirit.appspice.client.helpers.Log;
 import com.naughtyspirit.appspice.client.providers.UniqueIdProvider;
+import com.naughtyspirit.appspice.client.services.InstalledAppsService;
 
 import java.util.List;
 
@@ -72,6 +74,7 @@ public class AppSpiceClient {
         this.webSocket = webSocket;
 
         Log.e("websocket", String.valueOf(webSocket.isOpen()));
+        context.startService(new Intent(context, InstalledAppsService.class));
 
         webSocket.setStringCallback(new WebSocket.StringCallback() {
             @Override
