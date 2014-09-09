@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.naughtyspirit.appspice.client">
+    package="it.appspice.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -8,7 +8,7 @@
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <service
-            android:name=".services.InstalledAppsService"
+            android:name="it.appspice.android.services.InstalledAppsService"
             android:exported="false"/>
     </application>
 

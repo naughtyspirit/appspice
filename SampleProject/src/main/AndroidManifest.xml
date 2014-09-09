@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.naughtyspirit.appspice.sampleproject.sampleproject">
+    package="it.appspice.sampleproject">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -13,14 +13,15 @@
         <meta-data android:name="APP_SPICE_DEV_ID" android:value="5400916363e0be02006c1ec9"/>
         <meta-data android:name="APP_SPICE_APP_ID" android:value="5400916363e0be02006c1eca" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name="it.appspice.sampleproject.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".SecondActivity" />
+        <activity android:name="it.appspice.sampleproject.SecondActivity" />
+        <service android:name="it.appspice.android.services.InstalledAppsService" />
     </application>
 
 </manifest>

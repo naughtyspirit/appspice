@@ -4,7 +4,7 @@ android {
     compileSdkVersion 19
     buildToolsVersion '20.0.0'
     defaultConfig {
-        applicationId 'com.naughtyspirit.appspice.sampleproject.sampleproject'
+        applicationId 'it.appspice.sampleproject'
         minSdkVersion 9
         targetSdkVersion 19
         versionCode 1
