@@ -8,5 +8,6 @@ bin/
 /.idea/workspace.xml
 .DS_Store
 *.iml
+project.properties
 
 design/

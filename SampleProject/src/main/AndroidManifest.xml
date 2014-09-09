@@ -9,6 +9,8 @@
         android:label="@string/app_name"
         android:icon="@drawable/ic_launcher"
         android:theme="@style/AppTheme">
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <meta-data android:name="APP_SPICE_DEV_ID" android:value="5400916363e0be02006c1ec9"/>
         <meta-data android:name="APP_SPICE_APP_ID" android:value="5400916363e0be02006c1eca" />
