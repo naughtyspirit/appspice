@@ -3,10 +3,16 @@ package it.appspice.android.services;
 import android.app.IntentService;
 import android.content.Intent;
 
+import it.appspice.android.helpers.Log;
+
 /**
- * Created by n0_m0r3_pa1n on 04.09.14.
+ * Created by NaughtySpirit
+ * Created on 04/Sep/2014
  */
 public class InstalledAppsService extends IntentService {
+
+    private static final String TAG = "services.InstalledAppsService";
+
     public InstalledAppsService() {
         super("InstalledAppsService");
     }
@@ -14,5 +20,19 @@ public class InstalledAppsService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        Log.e(TAG, "onCreate()");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Log.e(TAG, "onDestroy()");
     }
 }

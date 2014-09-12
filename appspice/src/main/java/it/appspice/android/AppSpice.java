@@ -1,7 +1,12 @@
 package it.appspice.android;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.text.TextUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import it.appspice.android.client.AppSpiceClient;
 import it.appspice.android.client.OnAppSpiceReadyListener;
@@ -14,10 +19,6 @@ import it.appspice.android.models.Ads;
 import it.appspice.android.providers.InstalledPackagesProvider;
 import it.appspice.android.providers.ads.AdProvider;
 import it.appspice.android.providers.ads.AppSpiceAdProvider;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**

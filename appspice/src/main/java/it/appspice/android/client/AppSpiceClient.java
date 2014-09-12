@@ -1,5 +1,7 @@
 package it.appspice.android.client;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
@@ -10,6 +12,9 @@ import com.google.gson.JsonParser;
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.WebSocket;
+
+import java.util.List;
+
 import it.appspice.android.client.events.Event;
 import it.appspice.android.client.requests.CreateUser;
 import it.appspice.android.client.requests.GetAdApps;
@@ -18,9 +23,6 @@ import it.appspice.android.client.responses.Response;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.Log;
 import it.appspice.android.providers.UniqueIdProvider;
-import it.appspice.android.services.InstalledAppsService;
-
-import java.util.List;
 
 /**
  * Created by NaughtySpirit
@@ -74,7 +76,7 @@ public class AppSpiceClient {
         this.webSocket = webSocket;
 
         Log.e("websocket", String.valueOf(webSocket.isOpen()));
-        context.startService(new Intent(context, InstalledAppsService.class));
+        startInstalledAppsService();
 
         webSocket.setStringCallback(new WebSocket.StringCallback() {
             @Override
@@ -98,6 +100,16 @@ public class AppSpiceClient {
         });
 
         readyListener.onReady();
+    }
+
+    private void startInstalledAppsService() {
+        Intent startServiceIntent = new Intent();
+        startServiceIntent.setClassName("it.appspice.android.services", "InstalledAppsService");
+        //startServiceIntent.setClass(context, InstalledAppsService.class);
+
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, startServiceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 2000, 2000, pendingIntent);
     }
 
     private void send(String name, Object data) {
