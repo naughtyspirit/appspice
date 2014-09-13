@@ -1,6 +1,7 @@
 package it.appspice.android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
@@ -30,16 +31,16 @@ public class AppSpice {
     private static final String TAG = "Appspice";
 
     private static AppSpiceClient client;
-    private Activity ctx;
+    private Context ctx;
 
     private static AppSpice instance;
     private Map<String, AdProvider> adProviders = new HashMap<String, AdProvider>();
 
-    private AppSpice(Activity ctx) {
+    private AppSpice(Context ctx) {
         this.ctx = ctx;
     }
 
-    private static void newInstance(Activity ctx) {
+    private static void newInstance(Context ctx) {
         if (instance == null) {
             instance = new AppSpice(ctx);
         }
@@ -49,7 +50,7 @@ public class AppSpice {
         instance.initAdProviders();
     }
 
-    public static void init(Activity ctx, String appSpiceId, String appId) {
+    public static void init(Context ctx, String appSpiceId, String appId) {
         newInstance(ctx);
 
         instance.initAppSpice(appSpiceId, appId);
@@ -99,7 +100,7 @@ public class AppSpice {
     private void initAdProviders() {
         adProviders.put(AppSpiceAdProvider.PROVIDER_NAME, new AppSpiceAdProvider());
         for (Map.Entry<String, AdProvider> entry : adProviders.entrySet()) {
-            entry.getValue().onCreate(instance.ctx);
+//            entry.getValue().onCreate((Activity) instance.ctx);
         }
     }
 }

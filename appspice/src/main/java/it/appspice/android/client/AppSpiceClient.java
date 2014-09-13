@@ -1,6 +1,8 @@
 package it.appspice.android.client;
 
+import android.app.ActivityManager;
 import android.app.AlarmManager;
+import android.app.ApplicationErrorReport;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -19,10 +21,12 @@ import it.appspice.android.client.events.Event;
 import it.appspice.android.client.requests.CreateUser;
 import it.appspice.android.client.requests.GetAdApps;
 import it.appspice.android.client.requests.UpdateCounter;
+import it.appspice.android.client.requests.UpdateUserInstalledApps;
 import it.appspice.android.client.responses.Response;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.Log;
 import it.appspice.android.providers.UniqueIdProvider;
+import it.appspice.android.services.InstalledAppsService;
 
 /**
  * Created by NaughtySpirit
@@ -76,7 +80,13 @@ public class AppSpiceClient {
         this.webSocket = webSocket;
 
         Log.e("websocket", String.valueOf(webSocket.isOpen()));
-        startInstalledAppsService();
+
+        if (!isMyServiceRunning(InstalledAppsService.class)) {
+            Intent serviceIntent = new Intent(context, InstalledAppsService.class);
+            serviceIntent.putExtra(Constants.KEY_APP_SPICE_ID, appSpiceId);
+            serviceIntent.putExtra(Constants.KEY_APP_ID, appId);
+            context.startService(serviceIntent);
+        }
 
         webSocket.setStringCallback(new WebSocket.StringCallback() {
             @Override
@@ -102,14 +112,14 @@ public class AppSpiceClient {
         readyListener.onReady();
     }
 
-    private void startInstalledAppsService() {
-        Intent startServiceIntent = new Intent();
-        startServiceIntent.setClassName("it.appspice.android.services", "InstalledAppsService");
-        //startServiceIntent.setClass(context, InstalledAppsService.class);
-
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, startServiceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 2000, 2000, pendingIntent);
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void send(String name, Object data) {
@@ -164,6 +174,10 @@ public class AppSpiceClient {
     public static void sendAdClickEvent(String adProvicer, String adType) {
         String eventName = String.format("%s.%s.ad.click", adProvicer, adType);
         instance.sendUpdateCounterEvent(eventName);
+    }
+
+    public static void sendUpdateUserInstalledAppsEvent(List<String> newApps, List<String> removedApps) {
+        instance.send(UpdateUserInstalledApps.EVENT_NAME, new UpdateUserInstalledApps(newApps, removedApps));
     }
 
     private void sendUpdateCounterEvent(String name) {
