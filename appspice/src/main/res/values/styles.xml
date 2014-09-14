@@ -11,7 +11,8 @@
     </style>
 
     <style name="FullscreenAdDialog" parent="android:style/Theme.Translucent.NoTitleBar">
-        <item name="android:windowBackground">@color/bg_ad_dialog</item>
+        <!--<item name="android:windowBackground">@color/bg_ad_dialog</item>-->
+        <item name="android:windowBackground">@drawable/bg_1</item>
         <item name="android:windowAnimationStyle">@style/AdDialogAnimation</item>
     </style>
 

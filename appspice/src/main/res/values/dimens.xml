@@ -6,7 +6,7 @@
     <dimen name="app_title">30sp</dimen>
     <dimen name="icon_size">160dp</dimen>
     <dimen name="install_btn_margin">50dp</dimen>
-    <dimen name="install_btn_text">30sp</dimen>
+    <dimen name="install_btn_text">23sp</dimen>
 
     <!-- Wall Ad Dialog -->
     <dimen name="wall_ad_list_margin">55dp</dimen>

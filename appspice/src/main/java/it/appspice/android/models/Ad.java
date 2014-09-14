@@ -13,7 +13,7 @@ public class Ad {
     private String description;
     private String iconUrl;
     private Bitmap icon;
-    private String marketUrl;
+    private String appPackage;
 
     public String getType() {
         return type;
@@ -55,11 +55,11 @@ public class Ad {
         this.icon = icon;
     }
 
-    public String getMarketUrl() {
-        return marketUrl;
+    public String getAppPackage() {
+        return appPackage;
     }
 
-    public void setMarketUrl(String marketUrl) {
-        this.marketUrl = marketUrl;
+    public void setAppPackage(String appPackage) {
+        this.appPackage = appPackage;
     }
 }

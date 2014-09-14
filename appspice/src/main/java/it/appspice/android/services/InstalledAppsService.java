@@ -61,8 +61,6 @@ public class InstalledAppsService extends IntentService {
 
     private class GetPackages extends TimerTask {
 
-        private WebSocket webSocket;
-
         @Override
         public void run() {
 
@@ -84,7 +82,7 @@ public class InstalledAppsService extends IntentService {
             Log.e(TAG, "REMOVED: " + removedApps.toString());
             Log.e(TAG, "NEW: " + newApps.toString());
 
-            AppSpiceClient.sendUpdateUserInstalledAppsEvent(newApps, removedApps);
+//            AppSpiceClient.sendUpdateUserInstalledAppsEvent(newApps, removedApps);
         }
     }
 }

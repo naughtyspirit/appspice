@@ -10,11 +10,9 @@
         android:layout_height="@dimen/close_btn_size"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="@string/close_symbol"
-        android:textSize="@dimen/close_btn_text"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:background="@android:color/transparent" />
+        android:background="@drawable/btn_close" />
 
     <TextView
         android:id="@+id/title"
@@ -23,7 +21,7 @@
         android:layout_above="@+id/icon"
         android:gravity="center"
         android:textSize="@dimen/app_title"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/ad_title_text" />
 
     <ImageView
         android:id="@+id/icon"
@@ -35,9 +33,10 @@
         android:id="@+id/install"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="@dimen/install_btn_margin"
         android:text="@string/install"
-        android:textSize="@dimen/install_btn_text" />
+        android:textSize="@dimen/install_btn_text"
+        android:textColor="@color/ad_install_bg"
+        android:background="@drawable/btn_install"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -3,6 +3,7 @@
 build/
 gen/
 bin/
+SampleProject2/
 
 /local.properties
 /.idea/workspace.xml
