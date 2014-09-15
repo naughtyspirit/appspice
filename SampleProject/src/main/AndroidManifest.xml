@@ -32,11 +32,7 @@
         <service
             android:name="it.appspice.android.services.InstalledAppsService"
             android:exported="true"
-            android:process="it.appspice.InstalledAppsService">
-            <intent-filter>
-                <action android:name="it.appspice.android.InstalledAppsAction" />
-            </intent-filter>
-        </service>
+            android:process="it.appspice.InstalledAppsService" />
     </application>
 
 </manifest>

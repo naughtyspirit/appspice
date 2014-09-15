@@ -81,7 +81,10 @@ public class AppSpiceClient {
         Log.e("websocket", String.valueOf(webSocket.isOpen()));
 
         if (!isServiceRunning(InstalledAppsService.class)) {
-            startInstalledAppsService();
+            Intent serviceIntent = new Intent(context, InstalledAppsService.class);
+            serviceIntent.putExtra(Constants.KEY_APP_SPICE_ID, appSpiceId);
+            serviceIntent.putExtra(Constants.KEY_APP_ID, appId);
+            context.startService(serviceIntent);
         }
 
         webSocket.setStringCallback(new WebSocket.StringCallback() {
@@ -116,15 +119,6 @@ public class AppSpiceClient {
             }
         }
         return false;
-    }
-
-    private void startInstalledAppsService() {
-        Intent startServiceIntent = new Intent("it.appspice.android.InstalledAppsAction");
-        startServiceIntent.setClass(context, InstalledAppsService.class);
-
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, startServiceIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 2000, 2000, pendingIntent);
     }
 
     private void send(String name, Object data) {
