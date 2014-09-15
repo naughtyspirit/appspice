@@ -38,51 +38,34 @@ public class InstalledAppsService extends IntentService {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
-    }
-
-    @Override
     public void onCreate() {
         super.onCreate();
         Log.e(TAG, "onCreate()");
 
         installedApps = InstalledPackagesProvider.installedPackages(getPackageManager());
 
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new GetPackages(), 500, 2000);
+        List<String> newApps = new ArrayList<String>(),
+                removedApps = new ArrayList<String>();
+
+        List<String> currentApps = InstalledPackagesProvider.installedPackages(getPackageManager());
+
+
+        for (String currentPkg : currentApps) {
+            if (installedApps.contains(currentPkg)) {
+                installedApps.remove(currentPkg);
+            } else {
+                newApps.add(currentPkg);
+            }
+        }
+        removedApps.addAll(installedApps);
+        installedApps = currentApps;
+        Log.e(TAG, "REMOVED: " + removedApps.toString());
+        Log.e(TAG, "NEW: " + newApps.toString());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.e(TAG, "onDestroy()");
-    }
-
-    private class GetPackages extends TimerTask {
-
-        @Override
-        public void run() {
-
-            List<String> newApps = new ArrayList<String>(),
-                    removedApps = new ArrayList<String>();
-
-            List<String> currentApps = InstalledPackagesProvider.installedPackages(getPackageManager());
-
-
-            for (String currentPkg : currentApps) {
-                if (installedApps.contains(currentPkg)) {
-                    installedApps.remove(currentPkg);
-                } else {
-                    newApps.add(currentPkg);
-                }
-            }
-            removedApps.addAll(installedApps);
-            installedApps = currentApps;
-            Log.e(TAG, "REMOVED: " + removedApps.toString());
-            Log.e(TAG, "NEW: " + newApps.toString());
-
-//            AppSpiceClient.sendUpdateUserInstalledAppsEvent(newApps, removedApps);
-        }
     }
 }

@@ -2,7 +2,6 @@ package it.appspice.android.client;
 
 import android.app.ActivityManager;
 import android.app.AlarmManager;
-import android.app.ApplicationErrorReport;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -81,11 +80,8 @@ public class AppSpiceClient {
 
         Log.e("websocket", String.valueOf(webSocket.isOpen()));
 
-        if (!isMyServiceRunning(InstalledAppsService.class)) {
-            Intent serviceIntent = new Intent(context, InstalledAppsService.class);
-            serviceIntent.putExtra(Constants.KEY_APP_SPICE_ID, appSpiceId);
-            serviceIntent.putExtra(Constants.KEY_APP_ID, appId);
-            context.startService(serviceIntent);
+        if (!isServiceRunning(InstalledAppsService.class)) {
+            startInstalledAppsService();
         }
 
         webSocket.setStringCallback(new WebSocket.StringCallback() {
@@ -112,7 +108,7 @@ public class AppSpiceClient {
         readyListener.onReady();
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
+    private boolean isServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
@@ -120,6 +116,15 @@ public class AppSpiceClient {
             }
         }
         return false;
+    }
+
+    private void startInstalledAppsService() {
+        Intent startServiceIntent = new Intent("it.appspice.android.InstalledAppsAction");
+        startServiceIntent.setClass(context, InstalledAppsService.class);
+
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, startServiceIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 2000, 2000, pendingIntent);
     }
 
     private void send(String name, Object data) {
