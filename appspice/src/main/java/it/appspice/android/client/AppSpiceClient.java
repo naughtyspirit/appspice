@@ -156,7 +156,7 @@ public class AppSpiceClient {
             @Override
             public void onUniqueId(String uniqueId) {
                 userId = uniqueId;
-                CreateUser createUser = new CreateUser(uniqueId, installedPackages);
+                CreateUser createUser = new CreateUser(appId, appSpiceId, uniqueId, installedPackages);
                 send(CreateUser.EVENT_NAME, createUser);
 
                 getAds();
@@ -180,6 +180,6 @@ public class AppSpiceClient {
     }
 
     private void sendUpdateCounterEvent(String name) {
-        send(UpdateCounter.EVENT_NAME, new UpdateCounter(appId, appSpiceId, name, userId));
+        send(UpdateCounter.EVENT_NAME, new UpdateCounter(appSpiceId, appId, appSpiceId, name, userId));
     }
 }
