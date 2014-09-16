@@ -12,9 +12,13 @@ public class CreateUser {
 
     private String uniqueId;
     private List<String> installedPackages;
+    private final String appSpiceId;
+    private final String appId;
 
-    public CreateUser(String uniqueId, List<String> installedPackages) {
+    public CreateUser(String appSpiceId, String appId, String uniqueId, List<String> installedPackages) {
         this.uniqueId = uniqueId;
         this.installedPackages = installedPackages;
+        this.appSpiceId = appSpiceId;
+        this.appId = appId;
     }
 }
