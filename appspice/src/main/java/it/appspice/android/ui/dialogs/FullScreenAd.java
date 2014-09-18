@@ -1,9 +1,7 @@
 package it.appspice.android.ui.dialogs;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.view.View;
 import android.view.animation.Animation;
@@ -18,7 +16,6 @@ import java.util.Random;
 
 import it.appspice.android.R;
 import it.appspice.android.client.AppSpiceClient;
-import it.appspice.android.helpers.BlurBackgroundHelper;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.models.Ad;
 import it.appspice.android.providers.ads.AppSpiceAdProvider;

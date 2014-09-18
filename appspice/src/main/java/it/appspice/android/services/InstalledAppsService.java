@@ -13,6 +13,8 @@ import it.appspice.android.client.requests.UpdateUserInstalledApps;
 import it.appspice.android.helpers.ConnectionManager;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.Log;
+import it.appspice.android.helpers.MetaDataHelper;
+import it.appspice.android.helpers.SharedPreferencesHelper;
 import it.appspice.android.providers.InstalledPackagesProvider;
 
 /**
@@ -41,9 +43,9 @@ public class InstalledAppsService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        this.appSpiceId = intent.getStringExtra(Constants.KEY_APP_SPICE_ID);
-        this.appId = intent.getStringExtra(Constants.KEY_APP_ID);
-        this.userId = intent.getStringExtra(Constants.KEY_USER_ID);
+        this.appSpiceId = MetaDataHelper.getMetaData(getApplication(), Constants.KEY_APP_SPICE_ID);
+        this.appId = MetaDataHelper.getMetaData(getApplication(), Constants.KEY_APP_ID);
+        this.userId = SharedPreferencesHelper.getStringPreference(getApplication(), Constants.KEY_USER_ID);
 
         return START_STICKY;
     }
@@ -89,7 +91,12 @@ public class InstalledAppsService extends IntentService {
 
             if (removedApps.size() > 0 || newApps.size() > 0) {
                 connectionManager = ConnectionManager.getInstance(getApplicationContext());
-                connectionManager.init(Constants.API_ENDPOINT, Constants.API_PROTOCOL, null);
+                connectionManager.init(Constants.API_ENDPOINT, Constants.API_PROTOCOL, new ConnectionManager.OnMsgReceiveListener() {
+                    @Override
+                    public void onReceive(String str) {
+                        Log.e(TAG, str);
+                    }
+                });
 
                 connectionManager.send(new Event(UpdateUserInstalledApps.EVENT_NAME,
                         new UpdateUserInstalledApps(appSpiceId, appId, userId, newApps, removedApps)).toJSON());

@@ -19,8 +19,10 @@ import it.appspice.android.client.requests.Ping;
 import it.appspice.android.client.requests.UpdateCounter;
 import it.appspice.android.client.responses.Response;
 import it.appspice.android.helpers.ConnectionManager;
+import it.appspice.android.helpers.ConnectionManager.OnMsgReceiveListener;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.Log;
+import it.appspice.android.helpers.SharedPreferencesHelper;
 import it.appspice.android.models.Ads;
 import it.appspice.android.providers.InstalledPackagesProvider;
 import it.appspice.android.providers.UniqueIdProvider;
@@ -32,7 +34,7 @@ import it.appspice.android.services.InstalledAppsService;
  * Created by NaughtySpirit
  * Created on 20/Aug/2014
  */
-public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
+public class AppSpiceClient implements OnMsgReceiveListener {
     public static final String TAG = AppSpiceClient.class.getSimpleName();
 
     private Context context;
@@ -71,6 +73,7 @@ public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
             @Override
             public void onUniqueId(String uniqueId) {
                 userId = uniqueId;
+                SharedPreferencesHelper.setPreference(context, Constants.KEY_USER_ID, uniqueId);
 
                 List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
 
@@ -111,9 +114,6 @@ public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
     private void startAppsInstalledService() {
         if (!isServiceRunning(InstalledAppsService.class)) {
             Intent serviceIntent = new Intent(context, InstalledAppsService.class);
-            serviceIntent.putExtra(Constants.KEY_APP_SPICE_ID, appSpiceId);
-            serviceIntent.putExtra(Constants.KEY_APP_ID, appId);
-            serviceIntent.putExtra(Constants.KEY_USER_ID, userId);
             context.startService(serviceIntent);
         }
     }
