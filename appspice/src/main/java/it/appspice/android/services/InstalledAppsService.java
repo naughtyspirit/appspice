@@ -12,6 +12,7 @@ import it.appspice.android.client.events.Event;
 import it.appspice.android.client.requests.UpdateUserInstalledApps;
 import it.appspice.android.helpers.ConnectionManager;
 import it.appspice.android.helpers.Constants;
+import it.appspice.android.helpers.Log;
 import it.appspice.android.providers.InstalledPackagesProvider;
 
 /**
@@ -54,7 +55,7 @@ public class InstalledAppsService extends IntentService {
         installedApps = InstalledPackagesProvider.installedPackages(getPackageManager());
 
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new GetPackages(), 500, 1 * 60 * 1000);
+        timer.scheduleAtFixedRate(new GetPackages(), 500, Constants.INSTALLED_APPS_SERVICE_INTERVAL);
     }
 
     @Override

@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 
 import it.appspice.android.AppSpice;
-import it.appspice.android.client.AppSpiceClient;
 
 /**
  * Author: Atanas Dimitrov <seishin90@yandex.ru>
@@ -36,6 +35,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppSpice.close();
+        AppSpice.onDestroy();
     }
 }

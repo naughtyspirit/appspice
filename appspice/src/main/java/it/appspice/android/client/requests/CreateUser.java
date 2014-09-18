@@ -10,13 +10,13 @@ public class CreateUser {
 
     public static final String EVENT_NAME = CreateUser.class.getSimpleName();
 
-    private String userId;
+    private String uniqueId;
     private List<String> installedPackages;
     private final String appSpiceId;
     private final String appId;
 
-    public CreateUser(String appSpiceId, String appId, String userId, List<String> installedPackages) {
-        this.userId = userId;
+    public CreateUser(String appSpiceId, String appId, String uniqueId, List<String> installedPackages) {
+        this.uniqueId = uniqueId;
         this.installedPackages = installedPackages;
         this.appSpiceId = appSpiceId;
         this.appId = appId;

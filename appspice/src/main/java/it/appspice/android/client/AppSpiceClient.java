@@ -21,8 +21,11 @@ import it.appspice.android.client.responses.Response;
 import it.appspice.android.helpers.ConnectionManager;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.Log;
+import it.appspice.android.models.Ads;
 import it.appspice.android.providers.InstalledPackagesProvider;
 import it.appspice.android.providers.UniqueIdProvider;
+import it.appspice.android.providers.ads.AdProvider;
+import it.appspice.android.providers.ads.AppSpiceAdProvider;
 import it.appspice.android.services.InstalledAppsService;
 
 /**
@@ -30,8 +33,7 @@ import it.appspice.android.services.InstalledAppsService;
  * Created on 20/Aug/2014
  */
 public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
-    public static final String TAG = "client.AppSpiceClient";
-    private static final int PING_INTERVAL_IN_SECONDS = 5;
+    public static final String TAG = AppSpiceClient.class.getSimpleName();
 
     private Context context;
     private ConnectionManager connectionManager;
@@ -41,6 +43,8 @@ public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
     private String userId;
 
     private static AppSpiceClient instance;
+
+    private AppSpiceAdProvider adProvider = new AppSpiceAdProvider();
 
     public AppSpiceClient(Context context, String appSpiceId, String appId) {
         this.context = context;
@@ -55,8 +59,53 @@ public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
         initPingLoop();
 
         createUser();
+    }
 
-        startAppsInstalledService();
+    private void send(String name, Object data) {
+        connectionManager.send(new Event(name, data).toJSON());
+    }
+
+    private void createUser() {
+
+        final UniqueIdProvider idProvider = new UniqueIdProvider(context, new UniqueIdProvider.OnUniqueIdAvailable() {
+            @Override
+            public void onUniqueId(String uniqueId) {
+                userId = uniqueId;
+
+                List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
+
+                CreateUser createUser = new CreateUser(appSpiceId, appId, uniqueId, packages);
+                send(CreateUser.EVENT_NAME, createUser);
+
+                send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, uniqueId));
+
+                startAppsInstalledService();
+            }
+        });
+        idProvider.requestId();
+    }
+
+    public static void cacheAds(Ads ads) {
+        instance.adProvider.cacheAds(ads);
+    }
+
+    public static void sendAdImpressionEvent(String adProvider, String adType) {
+        String eventName = String.format("%s.%s.ad.impression", adProvider, adType);
+        instance.sendUpdateCounterEvent(eventName);
+    }
+
+    public static void sendAdClickEvent(String adProvider, String adType) {
+        String eventName = String.format("%s.%s.ad.click", adProvider, adType);
+        instance.sendUpdateCounterEvent(eventName);
+    }
+
+    private void sendUpdateCounterEvent(String eventName) {
+        send(UpdateCounter.EVENT_NAME, new UpdateCounter(appSpiceId, appId, "appspice", eventName));
+    }
+
+    public void close() {
+        connectionManager.close();
+        instance.adProvider.clearCachedAds();
     }
 
     private void startAppsInstalledService() {
@@ -79,56 +128,19 @@ public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
         return false;
     }
 
-    private void send(String name, Object data) {
-        connectionManager.send(new Event(name, data).toJSON());
-    }
-
-    public void close() {
-        connectionManager.close();
-    }
-
-    public void getAds() {
-        send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, userId));
-    }
-
-    public void createUser() {
-
-        final UniqueIdProvider idProvider = new UniqueIdProvider(context, new UniqueIdProvider.OnUniqueIdAvailable() {
-            @Override
-            public void onUniqueId(String uniqueId) {
-                List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
-
-                CreateUser createUser = new CreateUser(appSpiceId, appId, uniqueId, packages);
-                send(CreateUser.EVENT_NAME, createUser);
-
-                getAds();
-            }
-        });
-        idProvider.requestId();
-    }
-
-    public static void sendAdImpressionEvent(String adProvider, String adType) {
-        String eventName = String.format("%s.%s.ad.impression", adProvider, adType);
-        instance.sendUpdateCounterEvent(eventName);
-    }
-
-    public static void sendAdClickEvent(String adProvicer, String adType) {
-        String eventName = String.format("%s.%s.ad.click", adProvicer, adType);
-        instance.sendUpdateCounterEvent(eventName);
-    }
-
-    private void sendUpdateCounterEvent(String name) {
-        send(UpdateCounter.EVENT_NAME, new UpdateCounter(appSpiceId, appId, context.getPackageName(), name, userId));
+    public AdProvider getAdProvider() {
+        return adProvider;
     }
 
     private void initPingLoop() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                for (int i = 0; i < PING_INTERVAL_IN_SECONDS; i++) {
+                for (int i = 0; i < Constants.PING_INTERVAL_IN_SECONDS; i++) {
                     try {
                         Thread.sleep(i * 1000);
                     } catch (InterruptedException e) {
+                        Log.e(TAG, e.toString());
                     }
                 }
 
@@ -162,7 +174,6 @@ public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
             resultHandler.onData(data);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
-            // unavailable handler
         }
     }
 }

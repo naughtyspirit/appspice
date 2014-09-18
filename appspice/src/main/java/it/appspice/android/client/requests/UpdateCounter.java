@@ -12,13 +12,11 @@ public class UpdateCounter {
     private String appId;
     private String namespace;
     private String eventName;
-    private String userId;
 
-    public UpdateCounter(String appSpiceId, String appId, String namespace, String eventName, String userId) {
+    public UpdateCounter(String appSpiceId, String appId, String namespace, String eventName) {
         this.appSpiceId = appSpiceId;
         this.appId = appId;
         this.namespace = namespace;
         this.eventName = eventName;
-        this.userId = userId;
     }
 }

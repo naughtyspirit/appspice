@@ -33,10 +33,6 @@
             android:name="it.appspice.android.services.InstalledAppsService"
             android:exported="true"
             android:process="it.appspice.InstalledAppsService" />
-
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

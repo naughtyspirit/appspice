@@ -4,17 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import it.appspice.android.client.AppSpiceClient;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.Constants.AdTypes;
 import it.appspice.android.helpers.Log;
 import it.appspice.android.helpers.MetaDataHelper;
-import it.appspice.android.models.Ads;
-import it.appspice.android.providers.ads.AdProvider;
-import it.appspice.android.providers.ads.AppSpiceAdProvider;
 
 
 /**
@@ -23,13 +17,12 @@ import it.appspice.android.providers.ads.AppSpiceAdProvider;
  */
 public class AppSpice {
 
-    private static final String TAG = "Appspice";
+    private static final String TAG = AppSpice.class.getSimpleName();
 
     private static AppSpiceClient client;
     private Context ctx;
 
     private static AppSpice instance;
-    private Map<String, AdProvider> adProviders = new HashMap<String, AdProvider>();
 
     private AppSpice(Context ctx) {
         this.ctx = ctx;
@@ -41,8 +34,6 @@ public class AppSpice {
         }
 
         instance.ctx = ctx;
-
-        instance.initAdProviders();
     }
 
     public static void init(Context ctx, String appSpiceId, String appId) {
@@ -72,22 +63,10 @@ public class AppSpice {
 
     public static void showAd(final Activity context) {
         instance.ctx = context;
-        instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME).showAd(context, AdTypes.FullScreen);
+        client.getAdProvider().showAd(context, AdTypes.FullScreen);
     }
 
-    public static void cacheAds(Ads ads) {
-        ((AppSpiceAdProvider) instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME)).cacheAds(ads);
-    }
-
-    private void initAdProviders() {
-        adProviders.put(AppSpiceAdProvider.PROVIDER_NAME, new AppSpiceAdProvider());
-        for (Map.Entry<String, AdProvider> entry : adProviders.entrySet()) {
-//            entry.getValue().onCreate((Activity) instance.ctx);
-        }
-    }
-
-    public static void close() {
+    public static void onDestroy() {
         client.close();
-        ((AppSpiceAdProvider) instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME)).clearCachedAds();
     }
 }

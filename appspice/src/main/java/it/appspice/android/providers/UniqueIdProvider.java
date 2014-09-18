@@ -10,9 +10,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import it.appspice.android.helpers.Log;
 
 import java.io.IOException;
+
+import it.appspice.android.helpers.Log;
 
 /**
  * Created by NaughtySpirit
