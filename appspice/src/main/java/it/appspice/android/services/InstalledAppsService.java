@@ -3,17 +3,15 @@ package it.appspice.android.services;
 import android.app.IntentService;
 import android.content.Intent;
 
-import com.koushikdutta.async.http.WebSocket;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import it.appspice.android.AppSpice;
-import it.appspice.android.client.AppSpiceClient;
+import it.appspice.android.client.events.Event;
+import it.appspice.android.client.requests.UpdateUserInstalledApps;
+import it.appspice.android.helpers.ConnectionManager;
 import it.appspice.android.helpers.Constants;
-import it.appspice.android.helpers.Log;
 import it.appspice.android.providers.InstalledPackagesProvider;
 
 /**
@@ -22,10 +20,13 @@ import it.appspice.android.providers.InstalledPackagesProvider;
  */
 public class InstalledAppsService extends IntentService {
 
-    private static final String TAG = "services.InstalledAppsService";
+    private static final String TAG = InstalledAppsService.class.getSimpleName();
 
-    private static String appSpiceId;
-    private static String appId;
+    private String appSpiceId;
+    private String appId;
+    private String userId;
+
+    private ConnectionManager connectionManager;
 
     private static List<String> installedApps = new ArrayList<String>();
 
@@ -39,24 +40,30 @@ public class InstalledAppsService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        this.appSpiceId = intent.getStringExtra(Constants.KEY_APP_SPICE_ID);
+        this.appId = intent.getStringExtra(Constants.KEY_APP_ID);
+        this.userId = intent.getStringExtra(Constants.KEY_USER_ID);
+
         return START_STICKY;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e(TAG, "onCreate()");
 
         installedApps = InstalledPackagesProvider.installedPackages(getPackageManager());
 
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new GetPackages(), 500, 2000);
+        timer.scheduleAtFixedRate(new GetPackages(), 500, 1 * 60 * 1000);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, "onDestroy()");
+
+        if (connectionManager != null && connectionManager.isWebSocketOpen()) {
+            connectionManager.close();
+        }
     }
 
     private class GetPackages extends TimerTask {
@@ -64,11 +71,10 @@ public class InstalledAppsService extends IntentService {
         @Override
         public void run() {
 
-            List<String> newApps = new ArrayList<String>(),
+            final List<String> newApps = new ArrayList<String>(),
                     removedApps = new ArrayList<String>();
 
-            List<String> currentApps = InstalledPackagesProvider.installedPackages(getPackageManager());
-
+            final List<String> currentApps = InstalledPackagesProvider.installedPackages(getPackageManager());
 
             for (String currentPkg : currentApps) {
                 if (installedApps.contains(currentPkg)) {
@@ -79,10 +85,14 @@ public class InstalledAppsService extends IntentService {
             }
             removedApps.addAll(installedApps);
             installedApps = currentApps;
-            Log.e(TAG, "REMOVED: " + removedApps.toString());
-            Log.e(TAG, "NEW: " + newApps.toString());
 
-//            AppSpiceClient.sendUpdateUserInstalledAppsEvent(newApps, removedApps);
+            if (removedApps.size() > 0 || newApps.size() > 0) {
+                connectionManager = ConnectionManager.getInstance(getApplicationContext());
+                connectionManager.init(Constants.API_ENDPOINT, Constants.API_PROTOCOL, null);
+
+                connectionManager.send(new Event(UpdateUserInstalledApps.EVENT_NAME,
+                        new UpdateUserInstalledApps(appSpiceId, appId, userId, newApps, removedApps)).toJSON());
+            }
         }
     }
 }

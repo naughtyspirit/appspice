@@ -6,14 +6,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import java.util.Random;
+
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.Log;
 import it.appspice.android.models.Ads;
 import it.appspice.android.ui.dialogs.BaseAdDialog;
 import it.appspice.android.ui.dialogs.FullScreenAd;
 import it.appspice.android.ui.dialogs.WallAd;
-
-import java.util.Random;
 
 /**
  * Created by NaughtySpirit
@@ -22,7 +22,7 @@ import java.util.Random;
 public class AppSpiceAdProvider extends BaseAdProvider {
     public static final String PROVIDER_NAME = "appspice";
 
-    private static Ads cachedAds = new Ads();
+    private Ads cachedAds;
     private Context ctx;
 
     private Constants.AdTypes adType;
@@ -76,8 +76,14 @@ public class AppSpiceAdProvider extends BaseAdProvider {
         return AppSpiceAdProvider.PROVIDER_NAME;
     }
 
-    public static void cacheAds(Ads ads) {
+    public void cacheAds(Ads ads) {
         cachedAds = ads;
+    }
+
+    public void clearCachedAds() {
+        if (cachedAds != null && cachedAds.getData().size() > 0 ) {
+            cachedAds.getData().clear();
+        }
     }
 
     private class WaitForAdsThread extends Thread {
@@ -87,8 +93,8 @@ public class AppSpiceAdProvider extends BaseAdProvider {
         @Override
         public void run() {
             try {
-                while (cachedAds.getData().size() <= 0)
-                    Thread.sleep(1000);
+                while (cachedAds == null || cachedAds.getData().size() == 0)
+                    Thread.sleep(500);
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }

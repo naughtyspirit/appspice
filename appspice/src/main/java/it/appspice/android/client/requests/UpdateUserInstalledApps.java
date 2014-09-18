@@ -1,6 +1,5 @@
 package it.appspice.android.client.requests;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,10 +10,16 @@ public class UpdateUserInstalledApps {
 
     public static final String EVENT_NAME = UpdateUserInstalledApps.class.getSimpleName();
 
-    private List<String> newApps = new ArrayList<String>();
-    private List<String> removedApps = new ArrayList<String>();
+    private String appSpiceId;
+    private String appId;
+    private String userId;
+    private List<String> newApps;
+    private List<String> removedApps;
 
-    public UpdateUserInstalledApps(List<String> newApps, List<String> removedApps) {
+    public UpdateUserInstalledApps(String appSpiceId, String appId, String userId, List<String> newApps, List<String> removedApps) {
+        this.appSpiceId = appSpiceId;
+        this.appId = appId;
+        this.userId = userId;
         this.newApps = newApps;
         this.removedApps = removedApps;
     }

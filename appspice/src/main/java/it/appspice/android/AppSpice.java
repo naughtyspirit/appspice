@@ -2,22 +2,17 @@ package it.appspice.android;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.text.TextUtils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import it.appspice.android.client.AppSpiceClient;
-import it.appspice.android.client.OnAppSpiceReadyListener;
-import it.appspice.android.helpers.ConnectivityHelper;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.Constants.AdTypes;
 import it.appspice.android.helpers.Log;
 import it.appspice.android.helpers.MetaDataHelper;
 import it.appspice.android.models.Ads;
-import it.appspice.android.providers.InstalledPackagesProvider;
 import it.appspice.android.providers.ads.AdProvider;
 import it.appspice.android.providers.ads.AppSpiceAdProvider;
 
@@ -72,29 +67,16 @@ public class AppSpice {
             return;
         }
 
-        if (!ConnectivityHelper.isInternetEnabled(ctx)) {
-            Log.e(TAG, "No internet connection!");
-            return;
-        }
-
-        client = new AppSpiceClient(ctx, appSpiceId, appId, new OnAppSpiceReadyListener() {
-            @Override
-            public void onReady() {
-                List<String> packages = InstalledPackagesProvider.installedPackages(ctx.getPackageManager());
-                Log.e(TAG, String.valueOf(packages.size()));
-                client.createUser(packages);
-            }
-        });
+        client = new AppSpiceClient(ctx, appSpiceId, appId);
     }
 
-    public static void showAd(final Activity ctx) {
-        instance.ctx = ctx;
-        instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME).showAd(ctx, AdTypes.FullScreen);
+    public static void showAd(final Activity context) {
+        instance.ctx = context;
+        instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME).showAd(context, AdTypes.FullScreen);
     }
 
     public static void cacheAds(Ads ads) {
-        System.err.println("Ad " + ads.getData().size());
-        AppSpiceAdProvider.cacheAds(ads);
+        ((AppSpiceAdProvider) instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME)).cacheAds(ads);
     }
 
     private void initAdProviders() {
@@ -102,5 +84,10 @@ public class AppSpice {
         for (Map.Entry<String, AdProvider> entry : adProviders.entrySet()) {
 //            entry.getValue().onCreate((Activity) instance.ctx);
         }
+    }
+
+    public static void close() {
+        client.close();
+        ((AppSpiceAdProvider) instance.adProviders.get(AppSpiceAdProvider.PROVIDER_NAME)).clearCachedAds();
     }
 }

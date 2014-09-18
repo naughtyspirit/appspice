@@ -61,6 +61,7 @@ public class UniqueIdProvider {
     public void requestId() {
         int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(ctx);
         if (result != ConnectionResult.SUCCESS) {
+            Log.e(TAG, "Cannot obtain AdvertiserID.");
             listener.onUniqueId(generateDeviceId());
         } else {
             requestIdTask.execute();

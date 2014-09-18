@@ -15,10 +15,10 @@
 
         <meta-data
             android:name="APP_SPICE_DEV_ID"
-            android:value="5400916363e0be02006c1ec9" />
+            android:value="2244c1a604b2c482bf99" />
         <meta-data
             android:name="APP_SPICE_APP_ID"
-            android:value="5400916363e0be02006c1eca" />
+            android:value="541a89d878d27f731a1fd388" />
 
         <activity android:name="it.appspice.sampleproject.MainActivity">
             <intent-filter>
@@ -33,6 +33,10 @@
             android:name="it.appspice.android.services.InstalledAppsService"
             android:exported="true"
             android:process="it.appspice.InstalledAppsService" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
