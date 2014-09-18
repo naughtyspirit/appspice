@@ -60,7 +60,7 @@ public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
     }
 
     private void startAppsInstalledService() {
-        if (!isMyServiceRunning(InstalledAppsService.class)) {
+        if (!isServiceRunning(InstalledAppsService.class)) {
             Intent serviceIntent = new Intent(context, InstalledAppsService.class);
             serviceIntent.putExtra(Constants.KEY_APP_SPICE_ID, appSpiceId);
             serviceIntent.putExtra(Constants.KEY_APP_ID, appId);
@@ -69,7 +69,7 @@ public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
         }
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
+    private boolean isServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
@@ -96,8 +96,6 @@ public class AppSpiceClient implements ConnectionManager.OnMsgReceiveListener {
         final UniqueIdProvider idProvider = new UniqueIdProvider(context, new UniqueIdProvider.OnUniqueIdAvailable() {
             @Override
             public void onUniqueId(String uniqueId) {
-                Log.e(TAG, uniqueId);
-
                 List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
 
                 CreateUser createUser = new CreateUser(appSpiceId, appId, uniqueId, packages);

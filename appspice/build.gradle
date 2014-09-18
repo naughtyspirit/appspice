@@ -1,5 +1,8 @@
 apply plugin: 'com.android.library'
 
+apply plugin: 'maven'
+apply plugin: 'signing'
+
 android {
     compileSdkVersion 19
     buildToolsVersion '20'
