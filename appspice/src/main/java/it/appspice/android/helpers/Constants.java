@@ -7,8 +7,8 @@ package it.appspice.android.helpers;
 public class Constants {
 
 //    public static final String API_ENDPOINT = "ws://10.0.2.2:8080/primus";
-    public static final String API_ENDPOINT = "ws://192.168.1.21:8080/primus";
-//    public static final String API_ENDPOINT = "ws://appspice-server.herokuapp.com/primus";
+//    public static final String API_ENDPOINT = "ws://192.168.1.21:8080/primus";
+    public static final String API_ENDPOINT = "ws://appspice-server.herokuapp.com/primus";
     public static final String API_PROTOCOL = "ws";
 
     public static final String KEY_APP_SPICE_ID =  "APP_SPICE_DEV_ID";
