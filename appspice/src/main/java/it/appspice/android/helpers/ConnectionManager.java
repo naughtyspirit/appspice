@@ -110,7 +110,7 @@ public class ConnectionManager {
     }
 
     public void close() {
-        if (webSocket.isOpen()) {
+        if (webSocket != null && webSocket.isOpen()) {
             webSocket.close();
             buffer.clear();
         }

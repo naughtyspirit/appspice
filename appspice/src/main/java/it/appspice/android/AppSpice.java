@@ -20,33 +20,46 @@ public class AppSpice {
     private static final String TAG = AppSpice.class.getSimpleName();
 
     private static AppSpiceClient client;
-    private Context ctx;
+    private Context context;
 
     private static AppSpice instance;
 
-    private AppSpice(Context ctx) {
-        this.ctx = ctx;
+    private AppSpice(Context context) {
+        this.context = context;
     }
 
-    private static void newInstance(Context ctx) {
+    private static void newInstance(Context context) {
         if (instance == null) {
-            instance = new AppSpice(ctx);
+            instance = new AppSpice(context);
         }
 
-        instance.ctx = ctx;
+        instance.context = context;
     }
 
-    public static void init(Context ctx, String appSpiceId, String appId) {
-        newInstance(ctx);
+    /**
+     * Initializing the AppSpice SDK with providing AppSpiceId and AppId in the constructor.
+     *
+     * @param appContext Application's Context
+     * @param appSpiceId Developer's appSpiceId
+     * @param appId      Application's appId
+     */
+    public static void init(Context appContext, String appSpiceId, String appId) {
+        newInstance(appContext);
 
         instance.initAppSpice(appSpiceId, appId);
     }
 
-    public static void init(Activity ctx) {
-        newInstance(ctx);
+    /**
+     * Initializing the AppSpice SDK with using the AppSpiceId and AppId provided in the Android Manifest
+     * Meta Data.
+     *
+     * @param appContext Application's Context
+     */
+    public static void init(Context appContext) {
+        newInstance(appContext);
 
-        String appSpiceId = MetaDataHelper.getMetaData(ctx, Constants.KEY_APP_SPICE_ID);
-        String appId = MetaDataHelper.getMetaData(ctx, Constants.KEY_APP_ID);
+        String appSpiceId = MetaDataHelper.getMetaData(appContext, Constants.KEY_APP_SPICE_ID);
+        String appId = MetaDataHelper.getMetaData(appContext, Constants.KEY_APP_ID);
 
         instance.initAppSpice(appSpiceId, appId);
     }
@@ -58,14 +71,22 @@ public class AppSpice {
             return;
         }
 
-        client = new AppSpiceClient(ctx, appSpiceId, appId);
+        client = new AppSpiceClient(context, appSpiceId, appId);
     }
 
-    public static void showAd(final Activity context) {
-        instance.ctx = context;
-        client.getAdProvider().showAd(context, AdTypes.FullScreen);
+    /**
+     * Showing an Advertisement on the current Activity.
+     *
+     * @param activity Current Activity
+     */
+    public static void showAd(Activity activity) {
+        instance.context = activity;
+        client.getAdProvider().showAd(activity, AdTypes.FullScreen);
     }
 
+    /**
+     * Closing the AppSpice SDK connection.
+     */
     public static void onDestroy() {
         client.close();
     }

@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -46,12 +47,13 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
     private static AppSpiceClient instance;
 
-    private AppSpiceAdProvider adProvider = new AppSpiceAdProvider();
+    private static AppSpiceAdProvider adProvider = new AppSpiceAdProvider();
 
     public AppSpiceClient(Context context, String appSpiceId, String appId) {
         this.context = context;
         this.appSpiceId = appSpiceId;
         this.appId = appId;
+        this.userId = SharedPreferencesHelper.getStringPreference(context, Constants.KEY_USER_ID);
 
         instance = this;
 
@@ -60,7 +62,12 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
         initPingLoop();
 
-        createUser();
+        if (TextUtils.isEmpty(userId)) {
+            createUser();
+        } else {
+            send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, userId));
+            startAppsInstalledService();
+        }
     }
 
     private void send(String name, Object data) {
@@ -68,28 +75,30 @@ public class AppSpiceClient implements OnMsgReceiveListener {
     }
 
     private void createUser() {
-
-        final UniqueIdProvider idProvider = new UniqueIdProvider(context, new UniqueIdProvider.OnUniqueIdAvailable() {
+        UniqueIdProvider.getAdvertisingId(context, new UniqueIdProvider.OnAdvertisingIdAvailable() {
             @Override
-            public void onUniqueId(String uniqueId) {
-                userId = uniqueId;
-                SharedPreferencesHelper.setPreference(context, Constants.KEY_USER_ID, uniqueId);
+            public void onAdvertisingIdReady(String advertisingId) {
+                if (TextUtils.isEmpty(advertisingId)) {
+                    return;
+                }
+
+                userId = advertisingId;
+                SharedPreferencesHelper.setPreference(context, Constants.KEY_USER_ID, advertisingId);
 
                 List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
 
-                CreateUser createUser = new CreateUser(appSpiceId, appId, uniqueId, packages);
+                CreateUser createUser = new CreateUser(appSpiceId, appId, advertisingId, packages);
                 send(CreateUser.EVENT_NAME, createUser);
 
-                send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, uniqueId));
+                send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, advertisingId));
 
                 startAppsInstalledService();
             }
         });
-        idProvider.requestId();
     }
 
     public static void cacheAds(Ads ads) {
-        instance.adProvider.cacheAds(ads);
+        adProvider.cacheAds(ads);
     }
 
     public static void sendAdImpressionEvent(String adProvider, String adType) {
@@ -108,7 +117,7 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
     public void close() {
         connectionManager.close();
-        instance.adProvider.clearCachedAds();
+        adProvider.clearCachedAds();
     }
 
     private void startAppsInstalledService() {
@@ -128,7 +137,7 @@ public class AppSpiceClient implements OnMsgReceiveListener {
         return false;
     }
 
-    public AdProvider getAdProvider() {
+    public static AdProvider getAdProvider() {
         return adProvider;
     }
 
@@ -161,19 +170,17 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
     @Override
     public void onReceive(String str) {
-        Log.e("data", str);
-
         JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
         JsonArray jsonArray = jsonObject.getAsJsonArray("data");
         String eventName = jsonArray.get(0).getAsString();
         JsonElement data = jsonArray.get(1);
+
         try {
             Class<?> resultClass = Class.forName("it.appspice.android.client.responses." + eventName + "Response");
             Response resultHandler = (Response) resultClass.newInstance();
             resultHandler.onData(data);
-            resultHandler.onData(data);
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, e.toString());
         }
     }
 }

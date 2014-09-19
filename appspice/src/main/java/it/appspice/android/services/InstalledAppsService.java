@@ -99,7 +99,7 @@ public class InstalledAppsService extends IntentService {
                 });
 
                 connectionManager.send(new Event(UpdateUserInstalledApps.EVENT_NAME,
-                        new UpdateUserInstalledApps(appSpiceId, appId, userId, newApps, removedApps)).toJSON());
+                        new UpdateUserInstalledApps(userId, newApps, removedApps)).toJSON());
             }
         }
     }

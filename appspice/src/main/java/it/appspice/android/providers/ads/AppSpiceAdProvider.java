@@ -2,6 +2,7 @@ package it.appspice.android.providers.ads;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,6 +21,7 @@ import it.appspice.android.ui.dialogs.WallAd;
  * Created on 23/Aug/2014
  */
 public class AppSpiceAdProvider extends BaseAdProvider {
+    private static final String TAG = AppSpiceAdProvider.class.getSimpleName();
     public static final String PROVIDER_NAME = "appspice";
 
     private Ads cachedAds;
@@ -81,7 +83,7 @@ public class AppSpiceAdProvider extends BaseAdProvider {
     }
 
     public void clearCachedAds() {
-        if (cachedAds != null && cachedAds.getData().size() > 0 ) {
+        if (cachedAds != null && cachedAds.getData().size() > 0) {
             cachedAds.getData().clear();
         }
     }
@@ -114,21 +116,26 @@ public class AppSpiceAdProvider extends BaseAdProvider {
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+            try {
+                if (msg.getData().getBoolean(Constants.KEY_IS_READY)) {
+                    BaseAdDialog adDialog;
 
-            if (msg.getData().getBoolean(Constants.KEY_IS_READY)) {
-                BaseAdDialog adDialog;
 
-                switch (adType) {
-                    case FullScreen:
-                        adDialog = new FullScreenAd(ctx, cachedAds.getData().get(new Random().nextInt(cachedAds.getData().size())));
-                        adDialog.show();
-                        break;
+                    switch (adType) {
+                        case FullScreen:
+                            adDialog = new FullScreenAd(ctx, cachedAds.getData().get(new Random().nextInt(cachedAds.getData().size())));
+                            adDialog.show();
+                            break;
 
-                    case Wall:
-                        adDialog = new WallAd(ctx, cachedAds);
-                        adDialog.show();
-                        break;
+                        case Wall:
+                            adDialog = new WallAd(ctx, cachedAds);
+                            adDialog.show();
+                            break;
+                    }
+
                 }
+            } catch (Exception e) {
+//                    Log.e(TAG, e.toString());
             }
         }
     };

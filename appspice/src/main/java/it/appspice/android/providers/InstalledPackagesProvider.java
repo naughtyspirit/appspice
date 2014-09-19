@@ -6,20 +6,32 @@ import android.content.pm.PackageManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.appspice.android.helpers.Log;
+import it.appspice.android.services.InstalledAppsService;
+
 /**
  * Created by NaughtySpirit
  * Created on 23/Aug/2014
  */
 public class InstalledPackagesProvider {
 
+    private static final String TAG = InstalledAppsService.class.getSimpleName();
+
     public static List<String> installedPackages(PackageManager packageManager) {
-        List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
         List<String> installedPackages = new ArrayList<String>();
-        for (ApplicationInfo applicationInfo : packages) {
-            if(!isSystemPackage(applicationInfo)) {
-                installedPackages.add(applicationInfo.packageName);
+
+        try {
+            List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+
+            for (ApplicationInfo applicationInfo : packages) {
+                if (!isSystemPackage(applicationInfo)) {
+                    installedPackages.add(applicationInfo.packageName);
+                }
             }
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
         }
+
         return installedPackages;
     }
 
