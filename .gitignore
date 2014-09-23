@@ -9,7 +9,9 @@ SampleProject2/
 /.idea/workspace.xml
 .DS_Store
 *.iml
-project.properties
 
 design/
 gradle.properties
+
+*~
+.settings/
