@@ -3,6 +3,7 @@ package it.appspice.android.helpers;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.koushikdutta.async.callback.CompletedCallback;
@@ -34,51 +35,46 @@ public class ConnectionManager {
         public void onReceive(String str);
     }
 
-    public static ConnectionManager getInstance(Context context) {
-        if (instance == null) {
-            instance = new ConnectionManager(context);
-        }
+    public ConnectionManager(Context context, final OnMsgReceiveListener listener) {
+        this.endPoint = Constants.API_ENDPOINT;
+        this.protocol = Constants.API_PROTOCOL;
+        this.msgListener = listener;
 
-        return instance;
-    }
-
-    private ConnectionManager(Context context) {
         this.context = context;
     }
 
-    public void init(String endPointAddr, String protocol, final OnMsgReceiveListener listener) {
-        if (!isInternetEnabled(context)) {
-            return;
-        }
-
+    public ConnectionManager(Context context, String endPointAddr, String protocol, final OnMsgReceiveListener listener) {
         this.endPoint = endPointAddr;
         this.protocol = protocol;
         this.msgListener = listener;
 
-//        connect();
+        this.context = context;
     }
 
     private void connect() {
+        if (!isInternetEnabled(context)) {
+            return;
+        }
+
         AsyncHttpClient.getDefaultInstance().websocket(endPoint, protocol, new AsyncHttpClient.WebSocketConnectCallback() {
             @Override
             public void onCompleted(Exception e, WebSocket ws) {
-                if (e != null) {
-                    Log.e(TAG, String.valueOf(e));
+
+                if (e != null || ws == null) {
+                    Log.e(TAG, String.valueOf(e) + (ws == null ? " Socket is null" : ""));
                     return;
                 }
 
-                webSocket = ws;
-
                 Log.e(TAG, "Opened...");
 
-                webSocket.setStringCallback(new WebSocket.StringCallback() {
+                ws.setStringCallback(new WebSocket.StringCallback() {
                     @Override
                     public void onStringAvailable(String str) {
                         msgListener.onReceive(str);
                     }
                 });
 
-                webSocket.setClosedCallback(new CompletedCallback() {
+                ws.setClosedCallback(new CompletedCallback() {
                     @Override
                     public void onCompleted(Exception e) {
                         // TODO: Retry to connect
@@ -86,13 +82,15 @@ public class ConnectionManager {
                     }
                 });
 
-                webSocket.setEndCallback(new CompletedCallback() {
+                ws.setEndCallback(new CompletedCallback() {
                     @Override
                     public void onCompleted(Exception e) {
                         // TODO: Retry to connect
                         Log.e(TAG, "End...");
                     }
                 });
+
+                webSocket = ws;
 
                 if (buffer.size() > 0) {
                     for (String str : buffer) {

@@ -90,8 +90,7 @@ public class InstalledAppsService extends IntentService {
             installedApps = currentApps;
 
             if (removedApps.size() > 0 || newApps.size() > 0) {
-                connectionManager = ConnectionManager.getInstance(getApplicationContext());
-                connectionManager.init(Constants.API_ENDPOINT, Constants.API_PROTOCOL, new ConnectionManager.OnMsgReceiveListener() {
+                connectionManager = new ConnectionManager(getApplicationContext(), new ConnectionManager.OnMsgReceiveListener() {
                     @Override
                     public void onReceive(String str) {
                         Log.e(TAG, str);
