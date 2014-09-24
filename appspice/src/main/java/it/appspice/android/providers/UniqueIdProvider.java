@@ -65,7 +65,13 @@ public class UniqueIdProvider {
 
         int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(ctx);
         if (result != ConnectionResult.SUCCESS) {
-            GooglePlayServicesUtil.showErrorDialogFragment(result, (Activity) ctx, 0);
+            try {
+                GooglePlayServicesUtil.showErrorDialogFragment(result, (Activity) ctx, 0);
+            } catch (Exception e) {
+                try {
+                    GooglePlayServicesUtil.getErrorDialog(result, (Activity) ctx, 0).show();
+                } catch (Exception ex) {}
+            }
         } else {
             task.execute();
         }
