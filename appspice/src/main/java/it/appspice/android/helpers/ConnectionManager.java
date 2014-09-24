@@ -25,6 +25,9 @@ public class ConnectionManager {
     private WebSocket webSocket;
     private OnMsgReceiveListener msgListener;
 
+    private String endPoint;
+    private String protocol;
+
     private ArrayList<String> buffer = new ArrayList<String>();
 
     public interface OnMsgReceiveListener {
@@ -48,7 +51,15 @@ public class ConnectionManager {
             return;
         }
 
-        AsyncHttpClient.getDefaultInstance().websocket(endPointAddr, protocol, new AsyncHttpClient.WebSocketConnectCallback() {
+        this.endPoint = endPointAddr;
+        this.protocol = protocol;
+        this.msgListener = listener;
+
+//        connect();
+    }
+
+    private void connect() {
+        AsyncHttpClient.getDefaultInstance().websocket(endPoint, protocol, new AsyncHttpClient.WebSocketConnectCallback() {
             @Override
             public void onCompleted(Exception e, WebSocket ws) {
                 if (e != null) {
@@ -57,7 +68,8 @@ public class ConnectionManager {
                 }
 
                 webSocket = ws;
-                msgListener = listener;
+
+                Log.e(TAG, "Opened...");
 
                 webSocket.setStringCallback(new WebSocket.StringCallback() {
                     @Override
@@ -95,6 +107,7 @@ public class ConnectionManager {
     public void send(String data) {
         if (webSocket == null || !webSocket.isOpen()) {
             buffer.add(data);
+            connect();
             return;
         }
 
@@ -112,6 +125,7 @@ public class ConnectionManager {
     public void close() {
         if (webSocket != null && webSocket.isOpen()) {
             webSocket.close();
+            webSocket = null;
             buffer.clear();
         }
     }

@@ -3,7 +3,6 @@ package it.appspice.android.client;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.text.TextUtils;
 
 import com.google.gson.JsonArray;
@@ -16,7 +15,6 @@ import java.util.List;
 import it.appspice.android.client.events.Event;
 import it.appspice.android.client.requests.CreateUser;
 import it.appspice.android.client.requests.GetAdApps;
-import it.appspice.android.client.requests.Ping;
 import it.appspice.android.client.requests.UpdateCounter;
 import it.appspice.android.client.responses.Response;
 import it.appspice.android.helpers.ConnectionManager;
@@ -60,8 +58,6 @@ public class AppSpiceClient implements OnMsgReceiveListener {
         connectionManager = ConnectionManager.getInstance(context);
         connectionManager.init(Constants.API_ENDPOINT, Constants.API_PROTOCOL, this);
 
-        initPingLoop();
-
         if (TextUtils.isEmpty(userId)) {
             createUser();
         } else {
@@ -91,8 +87,6 @@ public class AppSpiceClient implements OnMsgReceiveListener {
                 send(CreateUser.EVENT_NAME, createUser);
 
                 send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, advertisingId));
-
-                startAppsInstalledService();
             }
         });
     }
@@ -139,33 +133,6 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
     public static AdProvider getAdProvider() {
         return adProvider;
-    }
-
-    private void initPingLoop() {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                for (int i = 0; i < Constants.PING_INTERVAL_IN_SECONDS; i++) {
-                    try {
-                        Thread.sleep(i * 1000);
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, e.toString());
-                    }
-                }
-
-                if (connectionManager.isWebSocketOpen())
-                    send(Ping.EVENT_NAME, new Ping());
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                if (!connectionManager.isWebSocketOpen()) {
-                    return;
-                }
-                initPingLoop();
-            }
-        }.execute();
     }
 
     @Override
