@@ -11,12 +11,12 @@ public class UpdateUserInstalledApps {
     public static final String EVENT_NAME = UpdateUserInstalledApps.class.getSimpleName();
 
     private String userId;
-    private List<String> newApps;
-    private List<String> removedApps;
+    private List<String> newPackages;
+    private List<String> removedPackages;
 
-    public UpdateUserInstalledApps(String userId, List<String> newApps, List<String> removedApps) {
+    public UpdateUserInstalledApps(String userId, List<String> newPackages, List<String> removedPackages) {
         this.userId = userId;
-        this.newApps = newApps;
-        this.removedApps = removedApps;
+        this.newPackages = newPackages;
+        this.removedPackages = removedPackages;
     }
 }
