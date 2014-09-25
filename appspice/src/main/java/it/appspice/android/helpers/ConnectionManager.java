@@ -1,9 +1,6 @@
 package it.appspice.android.helpers;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.koushikdutta.async.callback.CompletedCallback;
@@ -52,20 +49,14 @@ public class ConnectionManager {
     }
 
     private void connect() {
-        if (!isInternetEnabled(context)) {
-            return;
-        }
-
         AsyncHttpClient.getDefaultInstance().websocket(endPoint, protocol, new AsyncHttpClient.WebSocketConnectCallback() {
             @Override
             public void onCompleted(Exception e, WebSocket ws) {
 
                 if (e != null || ws == null) {
-                    Log.e(TAG, String.valueOf(e) + (ws == null ? " Socket is null" : ""));
+                    Log.e(TAG, String.valueOf(e) + (ws == null ? " No internet access or the socket is null" : ""));
                     return;
                 }
-
-                Log.e(TAG, "Opened...");
 
                 ws.setStringCallback(new WebSocket.StringCallback() {
                     @Override
@@ -78,7 +69,6 @@ public class ConnectionManager {
                     @Override
                     public void onCompleted(Exception e) {
                         // TODO: Retry to connect
-                        Log.e(TAG, "Closed...");
                     }
                 });
 
@@ -86,7 +76,6 @@ public class ConnectionManager {
                     @Override
                     public void onCompleted(Exception e) {
                         // TODO: Retry to connect
-                        Log.e(TAG, "End...");
                     }
                 });
 
@@ -130,25 +119,5 @@ public class ConnectionManager {
 
     public boolean isWebSocketOpen() {
         return webSocket != null && webSocket.isOpen();
-    }
-
-    private static boolean isInternetEnabled(Context context) {
-        try {
-            ConnectivityManager connection = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo wifi = connection.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            NetworkInfo mobile = connection.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-
-            boolean isEnabled = wifi.isAvailable() && wifi.isConnected() || mobile.isAvailable() && mobile.isConnected();
-
-            if (!isEnabled) {
-                Log.e(TAG, "No internet connection available.");
-                return false;
-            }
-
-            return true;
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-            return false;
-        }
     }
 }

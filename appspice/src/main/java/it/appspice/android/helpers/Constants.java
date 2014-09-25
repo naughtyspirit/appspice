@@ -16,7 +16,6 @@ public class Constants {
     public static final String KEY_USER_ID =  "USER_ID";
     public static final String KEY_IS_READY = "IS_READY";
 
-    public static final int PING_INTERVAL_IN_SECONDS = 5;
     public static final int INSTALLED_APPS_SERVICE_INTERVAL = 1 * 60 * 1000;
 
     public enum AdTypes {FullScreen, Wall, Grid, Banner}

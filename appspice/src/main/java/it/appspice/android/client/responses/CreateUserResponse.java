@@ -2,13 +2,16 @@ package it.appspice.android.client.responses;
 
 import com.google.gson.JsonElement;
 
+import it.appspice.android.client.AppSpiceClient;
+
 /**
  * Created by NaughtySpirit
- * Created on 19/Sep/2014
+ * Created on 25/Sep/2014
  */
-public class PingResponse extends BaseResponse {
+public class CreateUserResponse extends BaseResponse {
+
     @Override
     public void onData(JsonElement data) {
-
+        AppSpiceClient.sendGetAdsAndServiceEvent();
     }
 }

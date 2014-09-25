@@ -39,19 +39,19 @@ public class AppSpiceClient implements OnMsgReceiveListener {
     private Context context;
     private ConnectionManager connectionManager;
 
-    private String appSpiceId;
-    private String appId;
-    private String userId;
+    private static String appSpiceId;
+    private static String appId;
+    private static String userId;
 
     private static AppSpiceClient instance;
 
     private static AppSpiceAdProvider adProvider = new AppSpiceAdProvider();
 
-    public AppSpiceClient(Context context, String appSpiceId, String appId) {
+    public AppSpiceClient(Context context, String appSpId, String applicationId) {
         this.context = context;
-        this.appSpiceId = appSpiceId;
-        this.appId = appId;
-        this.userId = SharedPreferencesHelper.getStringPreference(context, Constants.KEY_USER_ID);
+        appSpiceId = appSpId;
+        appId = applicationId;
+        userId = SharedPreferencesHelper.getStringPreference(context, Constants.KEY_USER_ID);
 
         instance = this;
 
@@ -60,8 +60,7 @@ public class AppSpiceClient implements OnMsgReceiveListener {
         if (TextUtils.isEmpty(userId)) {
             createUser();
         } else {
-            send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, userId));
-            startAppsInstalledService();
+            sendGetAdsAndServiceEvent();
         }
     }
 
@@ -84,14 +83,17 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
                 CreateUser createUser = new CreateUser(appSpiceId, appId, advertisingId, packages);
                 send(CreateUser.EVENT_NAME, createUser);
-
-                send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, advertisingId));
             }
         });
     }
 
     public static void cacheAds(Ads ads) {
         adProvider.cacheAds(ads);
+    }
+
+    public static void sendGetAdsAndServiceEvent() {
+        instance.startAppsInstalledService();
+        instance.send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, userId));
     }
 
     public static void sendAdImpressionEvent(String adProvider, String adType) {
@@ -140,6 +142,10 @@ public class AppSpiceClient implements OnMsgReceiveListener {
         JsonArray jsonArray = jsonObject.getAsJsonArray("data");
         String eventName = jsonArray.get(0).getAsString();
         JsonElement data = jsonArray.get(1);
+
+        if (data.toString().equals("{}") || data.toString().equals("[]")) {
+            return;
+        }
 
         try {
             Class<?> resultClass = Class.forName("it.appspice.android.client.responses." + eventName + "Response");

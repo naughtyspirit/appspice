@@ -93,7 +93,7 @@ public class InstalledAppsService extends IntentService {
                 connectionManager = new ConnectionManager(getApplicationContext(), new ConnectionManager.OnMsgReceiveListener() {
                     @Override
                     public void onReceive(String str) {
-                        Log.e(TAG, str);
+//                        Log.e(TAG, str);
                     }
                 });
 
