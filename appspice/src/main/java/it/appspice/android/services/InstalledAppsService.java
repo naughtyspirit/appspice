@@ -22,8 +22,6 @@ import it.appspice.android.providers.InstalledPackagesProvider;
  */
 public class InstalledAppsService extends IntentService {
 
-    private static final String TAG = InstalledAppsService.class.getSimpleName();
-
     private String userId;
 
     private ConnectionManager connectionManager;
@@ -85,7 +83,7 @@ public class InstalledAppsService extends IntentService {
             installedApps = currentApps;
 
             if (removedApps.size() > 0 || newApps.size() > 0) {
-                connectionManager = new ConnectionManager(getApplicationContext(), new ConnectionManager.OnMsgReceiveListener() {
+                connectionManager = new ConnectionManager(new ConnectionManager.OnMsgReceiveListener() {
                     @Override
                     public void onReceive(String str) {
                         JsonResponse response = new JsonResponse(str);

@@ -53,7 +53,7 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
         instance = this;
 
-        connectionManager = new ConnectionManager(context, this);
+        connectionManager = new ConnectionManager(this);
 
         if (TextUtils.isEmpty(userId)) {
             createUser();
