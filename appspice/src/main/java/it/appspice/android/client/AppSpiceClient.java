@@ -45,7 +45,7 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
     private static AppSpiceClient instance;
 
-    private static AppSpiceAdProvider adProvider = new AppSpiceAdProvider();
+    private final AppSpiceAdProvider adProvider = new AppSpiceAdProvider();
 
     public AppSpiceClient(Context context, String appSpId, String applicationId) {
         this.context = context;
@@ -87,13 +87,13 @@ public class AppSpiceClient implements OnMsgReceiveListener {
         });
     }
 
-    public static void cacheAds(Ads ads) {
+    public void cacheAds(Ads ads) {
         adProvider.cacheAds(ads);
     }
 
-    public static void sendGetAdsAndServiceEvent() {
-        instance.startAppsInstalledService();
-        instance.send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, userId));
+    public void sendGetAdsAndServiceEvent() {
+        startAppsInstalledService();
+        send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, userId));
     }
 
     public static void sendAdImpressionEvent(String adProvider, String adType) {
@@ -112,7 +112,6 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
     public void close() {
         connectionManager.close();
-        adProvider.clearCachedAds();
     }
 
     private void startAppsInstalledService() {
@@ -132,10 +131,6 @@ public class AppSpiceClient implements OnMsgReceiveListener {
         return false;
     }
 
-    public static AdProvider getAdProvider() {
-        return adProvider;
-    }
-
     @Override
     public void onReceive(String str) {
         JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
@@ -143,16 +138,20 @@ public class AppSpiceClient implements OnMsgReceiveListener {
         String eventName = jsonArray.get(0).getAsString();
         JsonElement data = jsonArray.get(1);
 
-        if (data.toString().equals("{}") || data.toString().equals("[]")) {
-            return;
-        }
-
         try {
             Class<?> resultClass = Class.forName("it.appspice.android.client.responses." + eventName + "Response");
             Response resultHandler = (Response) resultClass.newInstance();
-            resultHandler.onData(data);
+            resultHandler.onData(data, this);
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
+    }
+
+    public void clearCachedAds() {
+        adProvider.clearCachedAds();
+    }
+
+    public AdProvider getAdProvider() {
+        return adProvider;
     }
 }

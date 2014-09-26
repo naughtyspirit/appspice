@@ -16,13 +16,13 @@ import it.appspice.android.models.Ads;
 public class GetAdAppsResponse extends BaseResponse {
 
     @Override
-    public void onData(JsonElement data) {
+    public void onData(JsonElement data, AppSpiceClient client) {
         ArrayList<Ad> adsData = gson.fromJson(data, new TypeToken<ArrayList<Ad>>() {
         }.getType());
 
         Ads ads = new Ads();
         ads.setData(adsData);
 
-        AppSpiceClient.cacheAds(ads);
+        client.cacheAds(ads);
     }
 }

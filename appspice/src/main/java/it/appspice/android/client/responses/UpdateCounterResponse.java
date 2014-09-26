@@ -5,13 +5,12 @@ import com.google.gson.JsonElement;
 import it.appspice.android.client.AppSpiceClient;
 
 /**
- * Created by NaughtySpirit
- * Created on 25/Sep/2014
+ * Created by Naughty Spirit
+ * on 9/26/14.
  */
-public class CreateUserResponse extends BaseResponse {
-
+public class UpdateCounterResponse extends BaseResponse {
     @Override
     public void onData(JsonElement data, AppSpiceClient client) {
-        client.sendGetAdsAndServiceEvent();
+        client.close();
     }
 }

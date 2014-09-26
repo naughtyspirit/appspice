@@ -3,6 +3,10 @@ package it.appspice.android.services;
 import android.app.IntentService;
 import android.content.Intent;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -93,7 +97,12 @@ public class InstalledAppsService extends IntentService {
                 connectionManager = new ConnectionManager(getApplicationContext(), new ConnectionManager.OnMsgReceiveListener() {
                     @Override
                     public void onReceive(String str) {
-//                        Log.e(TAG, str);
+                        JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
+                        JsonArray jsonArray = jsonObject.getAsJsonArray("data");
+                        String eventName = jsonArray.get(0).getAsString();
+                        if(eventName.equals(UpdateUserInstalledApps.EVENT_NAME)) {
+                            connectionManager.close();
+                        }
                     }
                 });
 
