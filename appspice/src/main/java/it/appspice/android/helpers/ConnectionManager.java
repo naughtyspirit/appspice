@@ -1,6 +1,5 @@
 package it.appspice.android.helpers;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.koushikdutta.async.callback.CompletedCallback;
@@ -17,9 +16,6 @@ public class ConnectionManager {
 
     private static final String TAG = ConnectionManager.class.getSimpleName();
 
-    private Context context;
-
-    private static ConnectionManager instance;
     private WebSocket webSocket;
     private OnMsgReceiveListener msgListener;
 
@@ -32,20 +28,10 @@ public class ConnectionManager {
         public void onReceive(String str);
     }
 
-    public ConnectionManager(Context context, final OnMsgReceiveListener listener) {
+    public ConnectionManager(final OnMsgReceiveListener listener) {
         this.endPoint = Constants.API_ENDPOINT;
         this.protocol = Constants.API_PROTOCOL;
         this.msgListener = listener;
-
-        this.context = context;
-    }
-
-    public ConnectionManager(Context context, String endPointAddr, String protocol, final OnMsgReceiveListener listener) {
-        this.endPoint = endPointAddr;
-        this.protocol = protocol;
-        this.msgListener = listener;
-
-        this.context = context;
     }
 
     private void connect() {
