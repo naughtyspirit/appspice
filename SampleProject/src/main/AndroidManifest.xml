@@ -2,7 +2,6 @@
     package="it.appspice.sampleproject">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -11,10 +10,10 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="APP_SPICE_ID"
-            android:value="b64c745b4c2d95b9479d" />
+            android:value="84309dcdec9003b60f8c" />
         <meta-data
             android:name="APP_SPICE_APP_ID"
-            android:value="5423f08150b6041b34a8a2ad" />
+            android:value="541c092b06a7f4020058a774" />
 
         <activity android:name="it.appspice.sampleproject.MainActivity">
             <intent-filter>

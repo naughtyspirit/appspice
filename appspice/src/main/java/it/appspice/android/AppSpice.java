@@ -89,5 +89,6 @@ public class AppSpice {
      */
     public static void onDestroy() {
         client.close();
+        client.clearCachedAds();
     }
 }

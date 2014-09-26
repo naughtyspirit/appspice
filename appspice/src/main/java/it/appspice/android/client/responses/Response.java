@@ -6,6 +6,8 @@ package it.appspice.android.client.responses;
  */
 import com.google.gson.JsonElement;
 
+import it.appspice.android.client.AppSpiceClient;
+
 public interface Response {
-    void onData(JsonElement data);
+    void onData(JsonElement data, AppSpiceClient client);
 }

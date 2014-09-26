@@ -9,9 +9,5 @@ import com.google.gson.Gson;
 public abstract class BaseResponse implements Response {
 
     protected Gson gson = new Gson();
-
-    protected void publish(Object event) {
-        //AdSpice.publish(event);
-    }
 }
 
