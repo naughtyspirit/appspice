@@ -5,10 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.util.List;
 
@@ -20,6 +17,7 @@ import it.appspice.android.client.responses.Response;
 import it.appspice.android.helpers.ConnectionManager;
 import it.appspice.android.helpers.ConnectionManager.OnMsgReceiveListener;
 import it.appspice.android.helpers.Constants;
+import it.appspice.android.helpers.JsonResponse;
 import it.appspice.android.helpers.Log;
 import it.appspice.android.helpers.SharedPreferencesHelper;
 import it.appspice.android.models.Ads;
@@ -133,10 +131,10 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
     @Override
     public void onReceive(String str) {
-        JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
-        JsonArray jsonArray = jsonObject.getAsJsonArray("data");
-        String eventName = jsonArray.get(0).getAsString();
-        JsonElement data = jsonArray.get(1);
+
+        JsonResponse response = new JsonResponse(str);
+        String eventName = response.getEventName();
+        JsonElement data = response.getData();
 
         try {
             Class<?> resultClass = Class.forName("it.appspice.android.client.responses." + eventName + "Response");

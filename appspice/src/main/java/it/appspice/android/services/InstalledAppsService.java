@@ -3,10 +3,6 @@ package it.appspice.android.services;
 import android.app.IntentService;
 import android.content.Intent;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -16,8 +12,7 @@ import it.appspice.android.client.events.Event;
 import it.appspice.android.client.requests.UpdateUserInstalledApps;
 import it.appspice.android.helpers.ConnectionManager;
 import it.appspice.android.helpers.Constants;
-import it.appspice.android.helpers.Log;
-import it.appspice.android.helpers.MetaDataHelper;
+import it.appspice.android.helpers.JsonResponse;
 import it.appspice.android.helpers.SharedPreferencesHelper;
 import it.appspice.android.providers.InstalledPackagesProvider;
 
@@ -29,8 +24,6 @@ public class InstalledAppsService extends IntentService {
 
     private static final String TAG = InstalledAppsService.class.getSimpleName();
 
-    private String appSpiceId;
-    private String appId;
     private String userId;
 
     private ConnectionManager connectionManager;
@@ -47,8 +40,6 @@ public class InstalledAppsService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        this.appSpiceId = MetaDataHelper.getMetaData(getApplication(), Constants.KEY_APP_SPICE_ID);
-        this.appId = MetaDataHelper.getMetaData(getApplication(), Constants.KEY_APP_ID);
         this.userId = SharedPreferencesHelper.getStringPreference(getApplication(), Constants.KEY_USER_ID);
 
         return START_STICKY;
@@ -97,10 +88,9 @@ public class InstalledAppsService extends IntentService {
                 connectionManager = new ConnectionManager(getApplicationContext(), new ConnectionManager.OnMsgReceiveListener() {
                     @Override
                     public void onReceive(String str) {
-                        JsonObject jsonObject = new JsonParser().parse(str).getAsJsonObject();
-                        JsonArray jsonArray = jsonObject.getAsJsonArray("data");
-                        String eventName = jsonArray.get(0).getAsString();
-                        if(eventName.equals(UpdateUserInstalledApps.EVENT_NAME)) {
+                        JsonResponse response = new JsonResponse(str);
+                        String eventName = response.getEventName();
+                        if (eventName.equals(UpdateUserInstalledApps.EVENT_NAME)) {
                             connectionManager.close();
                         }
                     }
