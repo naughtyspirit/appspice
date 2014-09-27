@@ -40,6 +40,7 @@ public class AppSpiceClient implements OnMsgReceiveListener {
     private static String appSpiceId;
     private static String appId;
     private static String userId;
+    private String tempAdvertisingId;
 
     private static AppSpiceClient instance;
 
@@ -74,8 +75,7 @@ public class AppSpiceClient implements OnMsgReceiveListener {
                     return;
                 }
 
-                userId = advertisingId;
-                SharedPreferencesHelper.setPreference(context, Constants.KEY_USER_ID, advertisingId);
+                tempAdvertisingId = advertisingId;
 
                 List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
 
@@ -87,6 +87,10 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
     public void cacheAds(Ads ads) {
         adProvider.cacheAds(ads);
+    }
+
+    public void clearCachedAds() {
+        adProvider.clearCachedAds();
     }
 
     public void sendGetAdsAndServiceEvent() {
@@ -108,8 +112,13 @@ public class AppSpiceClient implements OnMsgReceiveListener {
         send(UpdateCounter.EVENT_NAME, new UpdateCounter(appSpiceId, appId, "appspice", eventName));
     }
 
-    public void close() {
-        connectionManager.close();
+    public AdProvider getAdProvider() {
+        return adProvider;
+    }
+
+    public void storeUsersAdvertisingId() {
+        SharedPreferencesHelper.setPreference(context, Constants.KEY_USER_ID, tempAdvertisingId);
+        userId = tempAdvertisingId;
     }
 
     private void startAppsInstalledService() {
@@ -145,11 +154,7 @@ public class AppSpiceClient implements OnMsgReceiveListener {
         }
     }
 
-    public void clearCachedAds() {
-        adProvider.clearCachedAds();
-    }
-
-    public AdProvider getAdProvider() {
-        return adProvider;
+    public void close() {
+        connectionManager.close();
     }
 }

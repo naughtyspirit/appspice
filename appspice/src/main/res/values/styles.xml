@@ -6,8 +6,8 @@
     </style>
 
     <style name="AdDialogAnimation">
-        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
-        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+        <item name="android:windowEnterAnimation">@anim/scale_open</item>
+        <item name="android:windowExitAnimation">@anim/scale_close</item>
     </style>
 
     <style name="FullscreenAdDialog" parent="android:style/Theme.Translucent.NoTitleBar">

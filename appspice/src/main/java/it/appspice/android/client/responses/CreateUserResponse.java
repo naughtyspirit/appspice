@@ -12,6 +12,7 @@ public class CreateUserResponse extends BaseResponse {
 
     @Override
     public void onData(JsonElement data, AppSpiceClient client) {
+        client.storeUsersAdvertisingId();
         client.sendGetAdsAndServiceEvent();
     }
 }
