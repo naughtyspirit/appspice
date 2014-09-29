@@ -46,7 +46,7 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
     private final AppSpiceAdProvider adProvider = new AppSpiceAdProvider();
 
-    public AppSpiceClient(Context context, String appSpId, String applicationId) {
+    public AppSpiceClient(final Context context, String appSpId, String applicationId) {
         this.context = context;
         appSpiceId = appSpId;
         appId = applicationId;
@@ -56,11 +56,23 @@ public class AppSpiceClient implements OnMsgReceiveListener {
 
         connectionManager = new ConnectionManager(this);
 
-        if (TextUtils.isEmpty(userId)) {
-            createUser();
-        } else {
-            sendGetAdsAndServiceEvent();
-        }
+        UniqueIdProvider.getAdvertisingId(context, new UniqueIdProvider.OnAdvertisingIdAvailable() {
+            @Override
+            public void onAdvertisingIdReady(String advertisingId) {
+                tempAdvertisingId = advertisingId;
+
+                if (TextUtils.isEmpty(advertisingId)) {
+                    close();
+                    return;
+                }
+
+                if (!TextUtils.isEmpty(userId) && userId.equals(advertisingId)) {
+                    sendGetAdsAndServiceEvent();
+                } else if (!userId.equals(advertisingId)) {
+                    createUser();
+                }
+            }
+        });
     }
 
     private void send(String name, Object data) {
@@ -68,21 +80,10 @@ public class AppSpiceClient implements OnMsgReceiveListener {
     }
 
     private void createUser() {
-        UniqueIdProvider.getAdvertisingId(context, new UniqueIdProvider.OnAdvertisingIdAvailable() {
-            @Override
-            public void onAdvertisingIdReady(String advertisingId) {
-                if (TextUtils.isEmpty(advertisingId)) {
-                    return;
-                }
+        List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
 
-                tempAdvertisingId = advertisingId;
-
-                List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
-
-                CreateUser createUser = new CreateUser(appSpiceId, appId, advertisingId, packages);
-                send(CreateUser.EVENT_NAME, createUser);
-            }
-        });
+        CreateUser createUser = new CreateUser(appSpiceId, appId, userId, packages);
+        send(CreateUser.EVENT_NAME, createUser);
     }
 
     public void cacheAds(Ads ads) {
