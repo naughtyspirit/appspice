@@ -10,6 +10,13 @@ for a treat!
 
 ### Android Studio
 
+Add the following dependency to your `build.gradle
+
+```
+compile 'it.appspice:android:+'
+```
+
+
 ### Eclipse
 
 ### Update Android Manifest
@@ -23,7 +30,7 @@ Add the Internet permission
 Add your AppSpice ID
 
 ``` xml
-<meta-data android:name="APP_SPICE_ID" android:value="YOUR_APP_SPICE_ID" />
+<meta-data android:name="APP_SPICE_ID" android:value="YOUR APP SPICE ID" />
 ```
 
 Add your App ID
@@ -45,8 +52,7 @@ Add the AppSpice service
 
 Add this code to your main Activity
 
-``` java
-
+```java
 @Override
 public void onCreate(Bundle savedInstance) {
     super.onCreate(savedInstance);
@@ -60,10 +66,12 @@ public void onCreate(Bundle savedInstance) {
 protected void onDestroy() {
     super.onDestroy();
     AppSpice.onDestroy();
-}
-
 ```
 
 ### Manage your App
 
-Manage your app here 
+Add awesomeness to your app [here](http://www.appspice.it/manage/apps/)
+
+## License
+
+Copyright (c) 2014 NaughtySpirit. Released under [MIT license](http://www.opensource.org/licenses/mit-license.php)
