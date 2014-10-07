@@ -23,6 +23,7 @@ compile 'it.appspice:android:+'
 * Unzup and import as a library project
 * Add AppSpice as a dependency to your project
 * Integrate ``Google Play Services`` and ``AppCompat library`` in your project
+
 [How to integrate Google Play Services](https://developer.android.com/google/play-services/setup.html)
 
 ### Update Android Manifest
