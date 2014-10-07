@@ -10,14 +10,21 @@ for a treat!
 
 ### Android Studio
 
-Add the following dependency to your `build.gradle
+Add the following dependency to your `build.gradle`
 
-```
+``` groovy
 compile 'it.appspice:android:+'
 ```
 
-
 ### Eclipse
+
+[Download the SDK](https://github.com/naughtyspirit/appspice/archive/master.zip)
+
+Unzup and import as a library project
+Add AppSpice as a dependency to your project
+Integrate ``Google Play Services`` and ``AppCompat library`` in your project
+
+[How to integrate Google Play Services](https://developer.android.com/google/play-services/setup.html)
 
 ### Update Android Manifest
 
@@ -52,7 +59,7 @@ Add the AppSpice service
 
 Add this code to your main Activity
 
-```java
+``` java
 @Override
 public void onCreate(Bundle savedInstance) {
     super.onCreate(savedInstance);
@@ -66,6 +73,7 @@ public void onCreate(Bundle savedInstance) {
 protected void onDestroy() {
     super.onDestroy();
     AppSpice.onDestroy();
+}
 ```
 
 ### Manage your App
