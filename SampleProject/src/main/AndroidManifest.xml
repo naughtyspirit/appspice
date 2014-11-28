@@ -10,10 +10,10 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="APP_SPICE_ID"
-            android:value="84309dcdec9003b60f8c" />
+            android:value="033433aed1ec56d2bbbc" />
         <meta-data
             android:name="APP_SPICE_APP_ID"
-            android:value="541c092b06a7f4020058a774" />
+            android:value="545a3fee99309f020017bcbd" />
 
         <activity android:name="it.appspice.sampleproject.MainActivity">
             <intent-filter>

@@ -1,7 +1,5 @@
 package it.appspice.android.models;
 
-import android.graphics.Bitmap;
-
 /**
  * Created by NaughtySpirit
  * Created on 20/Aug/2014
@@ -12,7 +10,8 @@ public class Ad {
     private String name;
     private String description;
     private String iconUrl;
-    private Bitmap icon;
+    private String featureUrl;
+    private String rating;
     private String appPackage;
 
     public String getType() {
@@ -47,12 +46,20 @@ public class Ad {
         this.iconUrl = iconUrl;
     }
 
-    public Bitmap getIcon() {
-        return icon;
+    public String getFeatureUrl() {
+        return featureUrl;
     }
 
-    public void setIcon(Bitmap icon) {
-        this.icon = icon;
+    public void setFeatureUrl(String featureUrl) {
+        this.featureUrl = featureUrl;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
     }
 
     public String getAppPackage() {

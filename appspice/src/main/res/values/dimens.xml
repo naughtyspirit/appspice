@@ -16,4 +16,20 @@
     <dimen name="wall_ad_item_title_text">20sp</dimen>
     <dimen name="wall_ad_item_install_text">20sp</dimen>
     <dimen name="wall_ad_item_install_margin">5dp</dimen>
+
+    <!-- Interstitial Ad Dialog -->
+    <dimen name="interstitial_feature_height">180dp</dimen>
+    <dimen name="interstitial_shadow_height">10dp</dimen>
+    <dimen name="interstitial_icon_size">150dp</dimen>
+    <dimen name="interstitial_icon_margin_left">10dp</dimen>
+    <dimen name="interstitial_icon_margin_top">5dp</dimen>
+    <dimen name="interstitial_close_size">60dp</dimen>
+    <dimen name="interstitial_title_height">100dp</dimen>
+    <dimen name="interstitial_title_margin_top">60dp</dimen>
+    <dimen name="interstitial_title_text">35sp</dimen>
+    <dimen name="interstitial_description_margin">10dp</dimen>
+    <dimen name="interstitial_description_text">16sp</dimen>
+    <dimen name="interstitial_install_height">80dp</dimen>
+    <dimen name="interstitial_install_margin_top_bottom">5dp</dimen>
+    <dimen name="interstitial_install_margin_left_right">60dp</dimen>
 </resources>

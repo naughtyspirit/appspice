@@ -3,4 +3,5 @@
 
     <string name="close_symbol">x</string>
     <string name="install">INSTALL</string>
+    <string name="rating">Rating: %s</string>
 </resources>

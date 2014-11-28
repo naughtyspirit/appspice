@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/close"
+        android:layout_width="@dimen/interstitial_close_size"
+        android:layout_height="@dimen/interstitial_close_size"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:background="@drawable/btn_close" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/interstitial_title_height"
+        android:layout_marginTop="@dimen/interstitial_title_margin_top"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/interstitial_title_text"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1"/>
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/interstitial_icon_size"
+        android:layout_height="@dimen/interstitial_icon_size"
+        android:layout_marginTop="@dimen/interstitial_icon_margin_top"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@id/install"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/interstitial_install_height"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="@dimen/interstitial_install_margin_top_bottom"
+        android:layout_marginBottom="@dimen/interstitial_install_margin_top_bottom"
+        android:layout_marginLeft="@dimen/interstitial_install_margin_left_right"
+        android:layout_marginRight="@dimen/interstitial_install_margin_left_right"
+        android:background="@drawable/btn_google_play"
+        android:visibility="invisible" />
+
+</RelativeLayout>

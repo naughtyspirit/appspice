@@ -39,4 +39,4 @@ dependencies {
     compile 'com.google.android.gms:play-services:5.0.+'
 }
 
-apply from: 'maven_publish.gradle'
+//apply from: 'maven_publish.gradle'

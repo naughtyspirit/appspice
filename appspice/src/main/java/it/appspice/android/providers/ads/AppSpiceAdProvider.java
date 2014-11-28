@@ -14,6 +14,7 @@ import it.appspice.android.helpers.Log;
 import it.appspice.android.models.Ads;
 import it.appspice.android.ui.dialogs.BaseAdDialog;
 import it.appspice.android.ui.dialogs.FullScreenAd;
+import it.appspice.android.ui.dialogs.InterstitialAd;
 import it.appspice.android.ui.dialogs.WallAd;
 
 /**
@@ -123,7 +124,7 @@ public class AppSpiceAdProvider extends BaseAdProvider {
 
                     switch (adType) {
                         case FullScreen:
-                            adDialog = new FullScreenAd(ctx, cachedAds.getData().get(new Random().nextInt(cachedAds.getData().size())));
+                            adDialog = new InterstitialAd(ctx, cachedAds.getData().get(new Random().nextInt(cachedAds.getData().size())));
                             adDialog.show();
                             break;
 
