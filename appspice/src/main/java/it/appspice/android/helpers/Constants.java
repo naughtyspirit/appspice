@@ -18,5 +18,5 @@ public class Constants {
 
     public static final int INSTALLED_APPS_SERVICE_INTERVAL = 1 * 60 * 1000;
 
-    public enum AdTypes {FullScreen, Wall, Grid, Banner}
+    public enum AdTypes {FullScreen, Interstitial, Wall, Grid, Banner}
 }

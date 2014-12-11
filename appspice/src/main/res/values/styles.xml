@@ -6,13 +6,13 @@
     </style>
 
     <style name="AdDialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/scale_open</item>
-        <item name="android:windowExitAnimation">@anim/scale_close</item>
+        <!--<item name="android:windowEnterAnimation">@anim/alpha</item>-->
+        <!--<item name="android:windowExitAnimation">@anim/scale_close</item>-->
     </style>
 
     <style name="FullscreenAdDialog" parent="android:style/Theme.Translucent.NoTitleBar">
         <!--<item name="android:windowBackground">@color/bg_ad_dialog</item>-->
-        <item name="android:windowBackground">@drawable/bg_1</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowAnimationStyle">@style/AdDialogAnimation</item>
     </style>
 

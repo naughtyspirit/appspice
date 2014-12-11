@@ -2,22 +2,23 @@ package it.appspice.android.ui.dialogs;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
-import android.text.Html;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.koushikdutta.ion.Ion;
 
-import java.util.Random;
-
 import it.appspice.android.R;
 import it.appspice.android.client.AppSpiceClient;
 import it.appspice.android.helpers.Constants;
+import it.appspice.android.helpers.FontsLoaderHelper;
 import it.appspice.android.models.Ad;
 import it.appspice.android.providers.ads.AppSpiceAdProvider;
 
@@ -25,10 +26,21 @@ import it.appspice.android.providers.ads.AppSpiceAdProvider;
  * Created by NaughtySpirit
  * Created on 22/Aug/2014
  */
-public class InterstitialAd extends BaseAdDialog {
+public class InterstitialAd extends BaseAdDialog implements OnClickListener {
 
     private Ad ad;
     private Context ctx;
+
+    private ImageView icon;
+    private RelativeLayout window;
+    private RelativeLayout dialog;
+
+    private Animation slideInTop;
+    private Animation slideInBottom;
+    private Animation slideOutTop;
+    private Animation slideOutBottom;
+    private Animation alphaIn;
+    private Animation alphaOut;
 
     public InterstitialAd(Context ctx, Ad ad) {
         super(ctx, R.style.FullscreenAdDialog);
@@ -36,6 +48,7 @@ public class InterstitialAd extends BaseAdDialog {
         this.ad = ad;
         this.ctx = ctx;
 
+        initAnims();
         initUI();
 
         AppSpiceClient.sendAdImpressionEvent(AppSpiceAdProvider.PROVIDER_NAME, Constants.AdTypes.FullScreen.toString());
@@ -43,100 +56,121 @@ public class InterstitialAd extends BaseAdDialog {
 
     public void initUI() {
         setContentView(R.layout.dialog_ad_interstitial);
-//        Random randNum = new Random();
-        getWindow().setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.bg_snow));
+        setCancelable(false);
 
-        ((TextView) findViewById(R.id.title)).setText(ad.getName());
+        Typeface hero = FontsLoaderHelper.getHero(ctx);
+
+        window = (RelativeLayout) findViewById(R.id.window);
+        dialog = (RelativeLayout) findViewById(R.id.dialog);
+
+        icon = (ImageView) findViewById(R.id.icon);
+
+        TextView title = (TextView) findViewById(R.id.title);
+        title.setText(ad.getName());
+        title.setTypeface(hero);
 
         Ion.with(getContext())
                 .load(ad.getIconUrl())
-                .intoImageView((ImageView) findViewById(R.id.icon));
+                .intoImageView(icon);
 
-        Button close = (Button) findViewById(R.id.close);
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
+        Button install = (Button) findViewById(R.id.install);
+        install.setTypeface(hero);
+        install.setOnClickListener(this);
 
-        final Button install = (Button) findViewById(R.id.install);
-        install.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AppSpiceClient.sendAdClickEvent(AppSpiceAdProvider.PROVIDER_NAME, Constants.AdTypes.FullScreen.toString());
+        Button noInstall = (Button) findViewById(R.id.no_install);
+        noInstall.setTypeface(hero);
+        noInstall.setOnClickListener(this);
 
-                try {
-                    ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + ad.getAppPackage())));
-                } catch (android.content.ActivityNotFoundException e) {
-                    ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + ad.getAppPackage())));
-                }
-
-                dismiss();
-            }
-        });
-
-        final Animation wiggleAnim = AnimationUtils.loadAnimation(getContext(), R.anim.wiggle);
-        wiggleAnim.setFillAfter(true);
-
-        final Animation showInstallBtnAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_bottom);
-        showInstallBtnAnim.setFillAfter(true);
-        showInstallBtnAnim.setAnimationListener(new Animation.AnimationListener() {
+        alphaIn.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                install.setAnimation(wiggleAnim);
+                icon.setVisibility(View.VISIBLE);
+                dialog.setVisibility(View.VISIBLE);
+
+                icon.setAnimation(slideInTop);
+                dialog.setAnimation(slideInBottom);
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
+            public void onAnimationRepeat(Animation animation) {}
         });
+        window.setAnimation(alphaIn);
+    }
 
-        final Animation showIconAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_right);
-        showIconAnim.setFillAfter(true);
-        showIconAnim.setAnimationListener(new Animation.AnimationListener() {
+    private void initAnims() {
+        slideInTop = AnimationUtils.loadAnimation(ctx, R.anim.slide_in_top);
+        slideInBottom = AnimationUtils.loadAnimation(ctx, R.anim.slide_in_bottom);
+        slideOutTop = AnimationUtils.loadAnimation(ctx, R.anim.slide_out_top);
+        slideOutBottom = AnimationUtils.loadAnimation(ctx, R.anim.slide_out_bottom);
+        alphaIn = AnimationUtils.loadAnimation(ctx, R.anim.alpha_in);
+        alphaOut = AnimationUtils.loadAnimation(ctx, R.anim.alpha_out);
+
+        slideInTop.setFillAfter(true);
+        slideInBottom.setFillAfter(true);
+        slideOutTop.setFillAfter(true);
+        slideOutBottom.setFillAfter(true);
+    }
+
+    private void transitToMarket() {
+        AppSpiceClient.sendAdClickEvent(AppSpiceAdProvider.PROVIDER_NAME, Constants.AdTypes.Interstitial.toString());
+
+        try {
+            ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + ad.getAppPackage())));
+        } catch (android.content.ActivityNotFoundException e) {
+            ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + ad.getAppPackage())));
+        }
+    }
+
+    private void closeAd(final boolean isInstall) {
+        icon.startAnimation(slideOutTop);
+        dialog.startAnimation(slideOutBottom);
+
+        slideOutBottom.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                findViewById(R.id.icon).setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                install.setAnimation(showInstallBtnAnim);
+                window.startAnimation(alphaOut);
+                alphaOut.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        InterstitialAd.this.dismiss();
+
+                        if (isInstall) {
+                            transitToMarket();
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+                });
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
             }
         });
+    }
 
-        Animation showTitleAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_top);
-        showTitleAnim.setFillAfter(true);
-        findViewById(R.id.title).setAnimation(showTitleAnim);
-        showTitleAnim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.install) {
+            closeAd(true);
+        }
 
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                findViewById(R.id.icon).setAnimation(showIconAnim);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-
+        if (view.getId() == R.id.no_install) {
+            closeAd(false);
+        }
     }
 }
