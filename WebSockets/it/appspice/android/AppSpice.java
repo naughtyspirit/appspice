@@ -1,17 +1,22 @@
 package it.appspice.android;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
 import it.appspice.android.client.AppSpiceClient;
 import it.appspice.android.helpers.Constants;
+import it.appspice.android.helpers.Constants.AdTypes;
 import it.appspice.android.helpers.Log;
 import it.appspice.android.helpers.MetaDataHelper;
 
+
 /**
- * Created by nmp on 12/11/14.
+ * Created by NaughtySpirit
+ * Created on 20/Aug/2014
  */
 public class AppSpice {
+
     private static final String TAG = AppSpice.class.getSimpleName();
 
     private static AppSpiceClient client;
@@ -59,10 +64,6 @@ public class AppSpice {
         instance.initAppSpice(appSpiceId, appId);
     }
 
-    public static void displayResult() {
-        client.displayConnectionResult();
-    }
-
     private void initAppSpice(String appSpiceId, String appId) {
 
         if (TextUtils.isEmpty(appSpiceId) || TextUtils.isEmpty(appId)) {
@@ -70,7 +71,24 @@ public class AppSpice {
             return;
         }
 
-        //TODO: Init appspice client
         client = new AppSpiceClient(context, appSpiceId, appId);
+    }
+
+    /**
+     * Showing an Advertisement on the current Activity.
+     *
+     * @param activity Current Activity
+     */
+    public static void showAd(Activity activity) {
+        instance.context = activity;
+        client.getAdProvider().showAd(activity, AdTypes.FullScreen);
+    }
+
+    /**
+     * Closing the AppSpice SDK connection.
+     */
+    public static void onDestroy() {
+        client.close();
+        client.clearCachedAds();
     }
 }

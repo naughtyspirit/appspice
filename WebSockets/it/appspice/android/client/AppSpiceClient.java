@@ -5,13 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
-import com.koushikdutta.ion.Response;
+import com.google.gson.JsonElement;
 
 import java.util.List;
 
+import it.appspice.android.client.events.Event;
+import it.appspice.android.client.requests.CreateUser;
+import it.appspice.android.client.requests.GetAdApps;
+import it.appspice.android.client.requests.UpdateCounter;
+import it.appspice.android.client.responses.Response;
+import it.appspice.android.helpers.ConnectionManager;
+import it.appspice.android.helpers.ConnectionManager.OnMsgReceiveListener;
 import it.appspice.android.helpers.Constants;
+import it.appspice.android.helpers.JsonResponse;
 import it.appspice.android.helpers.Log;
 import it.appspice.android.helpers.SharedPreferencesHelper;
 import it.appspice.android.models.Ads;
@@ -25,10 +31,11 @@ import it.appspice.android.services.InstalledAppsService;
  * Created by NaughtySpirit
  * Created on 20/Aug/2014
  */
-public class AppSpiceClient {
+public class AppSpiceClient implements OnMsgReceiveListener {
     public static final String TAG = AppSpiceClient.class.getSimpleName();
 
     private Context context;
+    private ConnectionManager connectionManager;
 
     private static String appSpiceId;
     private static String appId;
@@ -47,11 +54,17 @@ public class AppSpiceClient {
 
         instance = this;
 
+        connectionManager = new ConnectionManager(this);
+
         if (TextUtils.isEmpty(userId)) {
             createUser();
         } else {
             sendGetAdsAndServiceEvent();
         }
+    }
+
+    private void send(String name, Object data) {
+        connectionManager.send(new Event(name, data).toJSON());
     }
 
     private void createUser() {
@@ -66,7 +79,8 @@ public class AppSpiceClient {
 
                 List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
 
-                //TODO: Create user new CreateUser(appSpiceId, appId, advertisingId, packages);
+                CreateUser createUser = new CreateUser(appSpiceId, appId, advertisingId, packages);
+                send(CreateUser.EVENT_NAME, createUser);
             }
         });
     }
@@ -81,29 +95,7 @@ public class AppSpiceClient {
 
     public void sendGetAdsAndServiceEvent() {
         startAppsInstalledService();
-        //TODO: Get Add Apps
-    }
-
-    public void displayConnectionResult() {
-        Ion.with(context)
-                .load("http://10.0.2.2:8080/echo/123")
-                .asString()
-                .withResponse()
-                .setCallback(new FutureCallback<Response<String>>() {
-                    @Override
-                    public void onCompleted(Exception e, Response<String> stringResponse) {
-                        if(stringResponse == null) {
-                            Log.d(TAG, "NULL");
-                        } else {
-                            Log.d(TAG, stringResponse.getResult());
-                        }
-                    }
-                });
-
-    }
-
-    public static void displayResult() {
-        instance.displayConnectionResult();
+        send(GetAdApps.EVENT_NAME, new GetAdApps(appSpiceId, appId, userId));
     }
 
     public static void sendAdImpressionEvent(String adProvider, String adType) {
@@ -117,7 +109,7 @@ public class AppSpiceClient {
     }
 
     private void sendUpdateCounterEvent(String eventName) {
-        //TODO: Update counter: new UpdateCounter(appSpiceId, appId, "appspice", eventName)
+        send(UpdateCounter.EVENT_NAME, new UpdateCounter(appSpiceId, appId, "appspice", eventName));
     }
 
     public AdProvider getAdProvider() {
@@ -144,5 +136,25 @@ public class AppSpiceClient {
             }
         }
         return false;
+    }
+
+    @Override
+    public void onReceive(String str) {
+
+        JsonResponse response = new JsonResponse(str);
+        String eventName = response.getEventName();
+        JsonElement data = response.getData();
+
+        try {
+            Class<?> resultClass = Class.forName("it.appspice.android.client.responses." + eventName + "Response");
+            Response resultHandler = (Response) resultClass.newInstance();
+            resultHandler.onData(data, this);
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+    }
+
+    public void close() {
+        connectionManager.close();
     }
 }

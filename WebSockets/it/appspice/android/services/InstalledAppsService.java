@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import it.appspice.android.client.events.Event;
+import it.appspice.android.client.requests.UpdateUserInstalledApps;
+import it.appspice.android.helpers.ConnectionManager;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.JsonResponse;
 import it.appspice.android.helpers.SharedPreferencesHelper;
@@ -21,6 +24,8 @@ public class InstalledAppsService extends IntentService {
 
     private String userId;
 
+    private ConnectionManager connectionManager;
+
     private static List<String> installedApps = new ArrayList<String>();
 
     public InstalledAppsService() {
@@ -29,7 +34,6 @@ public class InstalledAppsService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
     }
 
     @Override
@@ -52,6 +56,10 @@ public class InstalledAppsService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        if (connectionManager != null && connectionManager.isWebSocketOpen()) {
+            connectionManager.close();
+        }
     }
 
     private class GetPackages extends TimerTask {
@@ -75,7 +83,19 @@ public class InstalledAppsService extends IntentService {
             installedApps = currentApps;
 
             if (removedApps.size() > 0 || newApps.size() > 0) {
-                //TODO: Send UpdateUserInstalledApps new UpdateUserInstalledApps(userId, newApps, removedApps)).
+                connectionManager = new ConnectionManager(new ConnectionManager.OnMsgReceiveListener() {
+                    @Override
+                    public void onReceive(String str) {
+                        JsonResponse response = new JsonResponse(str);
+                        String eventName = response.getEventName();
+                        if (eventName.equals(UpdateUserInstalledApps.EVENT_NAME)) {
+                            connectionManager.close();
+                        }
+                    }
+                });
+
+                connectionManager.send(new Event(UpdateUserInstalledApps.EVENT_NAME,
+                        new UpdateUserInstalledApps(userId, newApps, removedApps)).toJSON());
             }
         }
     }

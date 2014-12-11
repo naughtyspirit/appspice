@@ -20,7 +20,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         AppSpice.init(this);
-        AppSpice.showAd(this);
+        AppSpice.displayResult();
+
 
         Button btn = (Button) findViewById(R.id.start_second_activity);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -35,6 +36,5 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppSpice.onDestroy();
     }
 }
