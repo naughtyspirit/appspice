@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Appspice-Client</string>
 
-    <string name="close_symbol">x</string>
+    <string name="close_symbol">X</string>
     <string name="install">INSTALL</string>
     <string name="rating">Rating: %s</string>
+    <string name="get_on_google_play">Get on Google Play</string>
+    <string name="no_thanks">No, thanks</string>
 </resources>

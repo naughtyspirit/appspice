@@ -56,7 +56,6 @@ public class InterstitialAd extends BaseAdDialog implements OnClickListener {
 
     public void initUI() {
         setContentView(R.layout.dialog_ad_interstitial);
-        setCancelable(false);
 
         Typeface hero = FontsLoaderHelper.getHero(ctx);
 
@@ -77,9 +76,19 @@ public class InterstitialAd extends BaseAdDialog implements OnClickListener {
         install.setTypeface(hero);
         install.setOnClickListener(this);
 
+        ((TextView) findViewById(R.id.install_title)).setTypeface(hero);
+
         Button noInstall = (Button) findViewById(R.id.no_install);
         noInstall.setTypeface(hero);
         noInstall.setOnClickListener(this);
+
+        findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeAd(false);
+                view.setVisibility(View.GONE);
+            }
+        });
 
         alphaIn.setAnimationListener(new Animation.AnimationListener() {
             @Override

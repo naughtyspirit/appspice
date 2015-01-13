@@ -9,58 +9,81 @@
     <RelativeLayout
         android:id="@+id/dialog"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="80dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginTop="130dp"
+        android:layout_height="@dimen/dialog_height"
+        android:minHeight="@dimen/dialog_min_height"
+        android:layout_marginLeft="@dimen/dialog_margin_sides"
+        android:layout_marginRight="@dimen/dialog_margin_sides"
+        android:layout_centerInParent="true"
         android:background="@drawable/shape_dialog"
         android:visibility="invisible">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:text="RetroSelfie - Selfies Editor"
-            android:textSize="24sp"
-            android:textColor="@android:color/white"
-            android:gravity="center"
-            />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="RetroSelfie - Selfies Editor"
+                android:textSize="@dimen/title_text_size"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                />
 
             <Button
                 android:id="@+id/install"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="@dimen/install_button_height"
                 android:background="@drawable/btn_market"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:text="Get on Google Play"
+                android:layout_marginLeft="@dimen/install_button_margin"
+                android:layout_marginRight="@dimen/install_button_margin"
+                android:layout_marginTop="@dimen/install_button_margin"
+                android:layout_below="@+id/title"/>
+
+            <TextView
+                android:id="@+id/install_title"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/install_button_height"
+                android:layout_marginLeft="@dimen/install_button_margin"
+                android:layout_marginRight="@dimen/install_button_margin"
+                android:layout_marginTop="@dimen/install_button_margin"
+                android:paddingLeft="@dimen/install_button_title_padding"
+                android:text="@string/get_on_google_play"
                 android:textColor="@android:color/white"
-                android:layout_above="@+id/no_install"/>
+                android:gravity="center"
+                android:layout_below="@+id/title"/>
 
             <Button
                 android:id="@+id/no_install"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:layout_alignParentBottom="true"
+                android:layout_height="@dimen/no_install_height"
+                android:layout_marginTop="@dimen/no_install_margin"
+                android:layout_marginBottom="@dimen/no_install_margin"
+                android:layout_below="@+id/install"
                 android:background="@android:color/transparent"
-                android:text="No, thanks"
+                android:text="@string/no_thanks"
                 android:textColor="@android:color/white"
                 android:gravity="center"/>
         </RelativeLayout>
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="@dimen/i_icon_size"
+        android:layout_height="@dimen/i_icon_size"
         android:background="@android:color/transparent"
+        android:layout_alignTop="@+id/dialog"
+        android:layout_marginTop="@dimen/i_icon_margin_top"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
         android:visibility="invisible"
         />
+
+    <TextView
+        android:id="@+id/close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/close_symbol"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/close_text_size"
+        android:textStyle="bold"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/close_margin"/>
 
 </RelativeLayout>
