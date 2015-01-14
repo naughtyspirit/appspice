@@ -47,7 +47,8 @@ public class UniqueIdProvider {
                 Log.e(TAG, e.getMessage());
             }
 
-            if (adInfo != null) {
+            // Checks whether the user has limit ad tracking enabled or not
+            if (adInfo != null && !adInfo.isLimitAdTrackingEnabled()) {
                 return adInfo.getId();
             }
 
@@ -70,7 +71,9 @@ public class UniqueIdProvider {
             } catch (Exception e) {
                 try {
                     GooglePlayServicesUtil.getErrorDialog(result, (Activity) ctx, 0).show();
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    Log.e(TAG, ex.getMessage());
+                }
             }
         } else {
             task.execute();
