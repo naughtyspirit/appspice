@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.koushikdutta.ion.Ion;
 
 import java.util.Random;
 
@@ -52,9 +51,6 @@ public class FullScreenAd extends BaseAdDialog {
 
         ((TextView) findViewById(R.id.title)).setText(ad.getName());
 
-        Ion.with(getContext())
-                .load(ad.getIconUrl())
-                .intoImageView((ImageView) findViewById(R.id.icon));
 
         Button close = (Button) findViewById(R.id.close);
         close.setOnClickListener(new View.OnClickListener() {

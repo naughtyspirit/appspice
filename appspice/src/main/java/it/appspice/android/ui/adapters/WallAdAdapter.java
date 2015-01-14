@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.koushikdutta.ion.Ion;
 
 import it.appspice.android.R;
 import it.appspice.android.models.Ads;
@@ -65,9 +64,6 @@ public class WallAdAdapter extends BaseAdapter {
     private void setData() {
         holder.title.setText(ad.getName());
 
-        Ion.with(ctx)
-                .load(ad.getIconUrl())
-                .intoImageView(holder.icon);
 
         holder.install.setOnClickListener(new View.OnClickListener() {
             @Override

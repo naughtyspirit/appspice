@@ -1,25 +1,16 @@
 package it.appspice.android.client;
 
-import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
-import android.text.TextUtils;
 
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
-import com.koushikdutta.ion.Response;
-
-import java.util.List;
-
+import it.appspice.android.api.AppSpiceApiClient;
+import it.appspice.android.api.EmptyCallback;
+import it.appspice.android.api.models.User;
 import it.appspice.android.helpers.Constants;
-import it.appspice.android.helpers.Log;
 import it.appspice.android.helpers.SharedPreferencesHelper;
 import it.appspice.android.models.Ads;
-import it.appspice.android.providers.InstalledPackagesProvider;
-import it.appspice.android.providers.UniqueIdProvider;
 import it.appspice.android.providers.ads.AdProvider;
 import it.appspice.android.providers.ads.AppSpiceAdProvider;
-import it.appspice.android.services.InstalledAppsService;
+import retrofit.client.Response;
 
 /**
  * Created by NaughtySpirit
@@ -47,28 +38,26 @@ public class AppSpiceClient {
 
         instance = this;
 
-        if (TextUtils.isEmpty(userId)) {
+    //if (TextUtils.isEmpty(userId)) {
             createUser();
-        } else {
-            sendGetAdsAndServiceEvent();
-        }
+//        } else {
+        sendGetAdsAndServiceEvent();
+//        }
     }
 
     private void createUser() {
-        UniqueIdProvider.getAdvertisingId(context, new UniqueIdProvider.OnAdvertisingIdAvailable() {
-            @Override
-            public void onAdvertisingIdReady(String advertisingId) {
-                if (TextUtils.isEmpty(advertisingId)) {
-                    return;
-                }
-
-                tempAdvertisingId = advertisingId;
-
-                List<String> packages = InstalledPackagesProvider.installedPackages(context.getPackageManager());
-
-                //TODO: Create user new CreateUser(appSpiceId, appId, advertisingId, packages);
-            }
-        });
+//        UniqueIdProvider.getAdvertisingId(context, new UniqueIdProvider.OnAdvertisingIdAvailable() {
+//            @Override
+//            public void onAdvertisingIdReady(String advertisingId) {
+//                if (TextUtils.isEmpty(advertisingId)) {
+//                    return;
+//                }
+//
+//                tempAdvertisingId = advertisingId;
+//                storeUsersAdvertisingId();
+        AppSpiceApiClient.getClient().createUser(new User("test"), new EmptyCallback<Response>());
+//            }
+//        });
     }
 
     public void cacheAds(Ads ads) {
@@ -80,25 +69,10 @@ public class AppSpiceClient {
     }
 
     public void sendGetAdsAndServiceEvent() {
-        startAppsInstalledService();
         //TODO: Get Add Apps
     }
 
     public void displayConnectionResult() {
-        Ion.with(context)
-                .load("http://10.0.2.2:8080/echo/123")
-                .asString()
-                .withResponse()
-                .setCallback(new FutureCallback<Response<String>>() {
-                    @Override
-                    public void onCompleted(Exception e, Response<String> stringResponse) {
-                        if(stringResponse == null) {
-                            Log.d(TAG, "NULL");
-                        } else {
-                            Log.d(TAG, stringResponse.getResult());
-                        }
-                    }
-                });
 
     }
 
@@ -127,22 +101,5 @@ public class AppSpiceClient {
     public void storeUsersAdvertisingId() {
         SharedPreferencesHelper.setPreference(context, Constants.KEY_USER_ID, tempAdvertisingId);
         userId = tempAdvertisingId;
-    }
-
-    private void startAppsInstalledService() {
-        if (!isServiceRunning(InstalledAppsService.class)) {
-            Intent serviceIntent = new Intent(context, InstalledAppsService.class);
-            context.startService(serviceIntent);
-        }
-    }
-
-    private boolean isServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

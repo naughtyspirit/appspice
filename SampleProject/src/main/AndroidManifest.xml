@@ -23,11 +23,6 @@
         </activity>
 
         <activity android:name="it.appspice.sampleproject.SecondActivity" />
-
-        <service
-            android:name="it.appspice.android.services.InstalledAppsService"
-            android:exported="true"
-            android:process="it.appspice.InstalledAppsService" />
     </application>
 
 </manifest>
