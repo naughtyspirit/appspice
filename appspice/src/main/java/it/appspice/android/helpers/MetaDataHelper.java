@@ -6,9 +6,10 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 /**
- * Created by NaughtySpirit
- * Created on 20/Aug/2014
+ * Created by Naughty Spirit
+ * on 1/28/15.
  */
+
 public class MetaDataHelper {
 
     public static final String TAG = "helpers.MetaDataHelper";
@@ -16,7 +17,7 @@ public class MetaDataHelper {
     public static String getMetaData(Context ctx, String name) {
         try {
             ApplicationInfo appInfo = ctx.getPackageManager().getApplicationInfo(
-                ctx.getPackageName(), PackageManager.GET_META_DATA
+                    ctx.getPackageName(), PackageManager.GET_META_DATA
             );
 
             if (appInfo.metaData != null) {

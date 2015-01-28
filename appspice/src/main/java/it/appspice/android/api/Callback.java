@@ -1,6 +1,7 @@
 package it.appspice.android.api;
 
-import it.appspice.android.helpers.Log;
+import android.util.Log;
+
 import retrofit.RetrofitError;
 
 /**

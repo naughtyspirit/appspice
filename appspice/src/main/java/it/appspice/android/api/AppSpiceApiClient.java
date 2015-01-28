@@ -10,7 +10,7 @@ public class AppSpiceApiClient {
     public static AppSpiceApi getClient() {
         if(client == null) {
             RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint("http://10.0.3.2:8080")
+                    .setEndpoint("http://10.0.2.2:8080")
                     .setLogLevel(RestAdapter.LogLevel.FULL)
                     .build();
 
