@@ -3,6 +3,7 @@ package it.appspice.android.providers;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
@@ -12,8 +13,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.io.IOException;
-
-import it.appspice.android.helpers.Log;
 
 /**
  * Created by NaughtySpirit
@@ -70,7 +69,8 @@ public class UniqueIdProvider {
             } catch (Exception e) {
                 try {
                     GooglePlayServicesUtil.getErrorDialog(result, (Activity) ctx, 0).show();
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                }
             }
         } else {
             task.execute();

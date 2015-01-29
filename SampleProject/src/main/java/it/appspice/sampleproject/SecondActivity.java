@@ -16,6 +16,6 @@ public class SecondActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        AppSpice.showAd(this);
+        //AppSpice.showAd(this);
     }
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <resources>
     <string name="app_name">Appspice-Client</string>
 
@@ -5,3 +6,7 @@
     <string name="install">INSTALL</string>
     <string name="rating">Rating: %s</string>
 </resources>
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<resources></resources>
+>>>>>>> rest

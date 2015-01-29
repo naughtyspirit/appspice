@@ -1,25 +1,23 @@
 package it.appspice.android;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
-import it.appspice.android.client.AppSpiceClient;
+import it.appspice.android.api.AppSpiceApiClient;
+import it.appspice.android.api.EmptyCallback;
+import it.appspice.android.api.models.Event;
+import it.appspice.android.api.models.User;
 import it.appspice.android.helpers.Constants;
-import it.appspice.android.helpers.Constants.AdTypes;
-import it.appspice.android.helpers.Log;
 import it.appspice.android.helpers.MetaDataHelper;
-
+import retrofit.client.Response;
 
 /**
- * Created by NaughtySpirit
- * Created on 20/Aug/2014
+ * Created by nmp on 12/11/14.
  */
 public class AppSpice {
-
     private static final String TAG = AppSpice.class.getSimpleName();
 
-    private static AppSpiceClient client;
     private Context context;
 
     private static AppSpice instance;
@@ -49,12 +47,16 @@ public class AppSpice {
         instance.initAppSpice(appSpiceId, appId);
     }
 
-    /**
-     * Initializing the AppSpice SDK with using the AppSpiceId and AppId provided in the Android Manifest
-     * Meta Data.
-     *
-     * @param appContext Application's Context
-     */
+    private void initAppSpice(String appSpiceId, String appId) {
+
+        if (TextUtils.isEmpty(appSpiceId) || TextUtils.isEmpty(appId)) {
+            Log.e(TAG, "APP_SPICE_ID or APP_SPICE_APP_ID is empty.");
+            return;
+        }
+
+        AppSpiceApiClient.getClient().createUser(new User("test"), new EmptyCallback<Response>());
+    }
+
     public static void init(Context appContext) {
         newInstance(appContext);
 
@@ -64,31 +66,7 @@ public class AppSpice {
         instance.initAppSpice(appSpiceId, appId);
     }
 
-    private void initAppSpice(String appSpiceId, String appId) {
-
-        if (TextUtils.isEmpty(appSpiceId) || TextUtils.isEmpty(appId)) {
-            Log.e(TAG, "APP_SPICE_ID or APP_SPICE_APP_ID is empty.");
-            return;
-        }
-
-        client = new AppSpiceClient(context, appSpiceId, appId);
-    }
-
-    /**
-     * Showing an Advertisement on the current Activity.
-     *
-     * @param activity Current Activity
-     */
-    public static void showAd(Activity activity) {
-        instance.context = activity;
-        client.getAdProvider().showAd(activity, AdTypes.FullScreen);
-    }
-
-    /**
-     * Closing the AppSpice SDK connection.
-     */
-    public static void onDestroy() {
-        client.close();
-        client.clearCachedAds();
+    public static void track(Event event) {
+        AppSpiceApiClient.getClient().createEvent(event, new EmptyCallback<Response>());
     }
 }
