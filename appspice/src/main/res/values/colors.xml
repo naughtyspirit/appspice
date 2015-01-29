@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="bg_ad_dialog">#E6000000</color>
-    <color name="ad_title_text">#4e4d4d</color>
-    <color name="ad_install_bg">#B44e4d4d</color>
-    <color name="bg_interstitial">#F0000000</color>
-    <color name="bg_dialog">#2a2b2c</color>
-    <color name="bg_btn_install">#8ed400</color>
-</resources>
