@@ -10,14 +10,9 @@ import java.util.Map;
  */
 public class Event {
 
-    public Event(String namespace, String name, Map<String, Object> data) {
-        this.namespace = namespace;
+    public Event(String name, Map<String, Object> data) {
         this.name = name;
         this.data = data;
-    }
-
-    public String getNamespace() {
-        return namespace;
     }
 
     public String getName() {
@@ -28,8 +23,6 @@ public class Event {
         return data;
     }
 
-    @Expose
-    private String namespace;
     @Expose
     private String name;
     @Expose

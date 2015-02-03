@@ -4,10 +4,15 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.HashMap;
+
 import it.appspice.android.api.AppSpiceApiClient;
+import it.appspice.android.api.Callback;
 import it.appspice.android.api.EmptyCallback;
 import it.appspice.android.api.models.Event;
+import it.appspice.android.api.models.VariableProperties;
 import it.appspice.android.api.models.User;
+import it.appspice.android.api.models.Variable;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.MetaDataHelper;
 import retrofit.client.Response;
@@ -30,7 +35,6 @@ public class AppSpice {
         if (instance == null) {
             instance = new AppSpice(context);
         }
-
         instance.context = context;
     }
 
@@ -55,6 +59,11 @@ public class AppSpice {
         }
 
         AppSpiceApiClient.getClient().createUser(new User("test"), new EmptyCallback<Response>());
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("userId", "test");
+
+        AppSpiceApiClient.getClient().createEvent(new Event("appSpice.appStart", data), new EmptyCallback<Response>());
     }
 
     public static void init(Context appContext) {
@@ -68,5 +77,15 @@ public class AppSpice {
 
     public static void track(Event event) {
         AppSpiceApiClient.getClient().createEvent(event, new EmptyCallback<Response>());
+    }
+
+    public static void getVariable(String variable) {
+        AppSpiceApiClient.getClient().getVariable(variable, "54cf8542bb98aa9a7ae778ba", new Callback<Variable>() {
+            @Override
+            public void success(Variable variable, Response response) {
+                VariableProperties variableProperties = VariableProperties.fromVariable(variable);
+                Log.d("Response", variableProperties.get("color") + "");
+            }
+        });
     }
 }
