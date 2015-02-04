@@ -10,9 +10,9 @@ import it.appspice.android.api.AppSpiceApiClient;
 import it.appspice.android.api.Callback;
 import it.appspice.android.api.EmptyCallback;
 import it.appspice.android.api.models.Event;
-import it.appspice.android.api.models.VariableProperties;
 import it.appspice.android.api.models.User;
 import it.appspice.android.api.models.Variable;
+import it.appspice.android.api.models.VariableProperties;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.MetaDataHelper;
 import retrofit.client.Response;
@@ -63,7 +63,7 @@ public class AppSpice {
         HashMap<String, Object> data = new HashMap<>();
         data.put("userId", "test");
 
-        AppSpiceApiClient.getClient().createEvent(new Event("appSpice.appStart", data), new EmptyCallback<Response>());
+        AppSpiceApiClient.getClient().createEvent(new Event("appSpice", "appStart", data), new EmptyCallback<Response>());
     }
 
     public static void init(Context appContext) {
@@ -77,6 +77,10 @@ public class AppSpice {
 
     public static void track(Event event) {
         AppSpiceApiClient.getClient().createEvent(event, new EmptyCallback<Response>());
+    }
+
+    public static void track(String namespace, String name) {
+        AppSpiceApiClient.getClient().createEvent(new Event(namespace, name), new EmptyCallback<Response>());
     }
 
     public static void getVariable(String variable) {

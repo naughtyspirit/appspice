@@ -2,6 +2,7 @@ package it.appspice.android.api.models;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,9 +11,14 @@ import java.util.Map;
  */
 public class Event {
 
-    public Event(String name, Map<String, Object> data) {
+    public Event(String namespace, String name, Map<String, Object> data) {
+        this.namespace = namespace;
         this.name = name;
         this.data = data;
+    }
+
+    public Event(String namespace, String name) {
+        this(namespace, name, new HashMap<String, Object>());
     }
 
     public String getName() {
@@ -23,10 +29,14 @@ public class Event {
         return data;
     }
 
+    public String getNamespace() {
+        return namespace;
+    }
+
+    @Expose
+    private String namespace;
     @Expose
     private String name;
     @Expose
     private Map<String, Object> data;
-
-
 }

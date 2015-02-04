@@ -21,4 +21,8 @@ public class VariableProperties {
     public String get(String name) {
         return rawProperties.get(name).toString();
     }
+
+    public int getInt(String name) {
+        return Integer.parseInt(get(name));
+    }
 }
