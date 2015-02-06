@@ -4,6 +4,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.Map;
+
 import it.appspice.android.api.AppSpiceApiClient;
 import it.appspice.android.api.Callback;
 import it.appspice.android.api.EmptyCallback;
@@ -24,6 +26,7 @@ import retrofit.client.Response;
  */
 public class AppSpice {
     private static final String TAG = AppSpice.class.getSimpleName();
+    private static String appId;
 
     private Context context;
 
@@ -74,6 +77,8 @@ public class AppSpice {
             return;
         }
 
+        AppSpice.appId = appId;
+
         UniqueIdProvider.getAdvertisingId(context, new UniqueIdProvider.AdvertisingIdListener() {
             @Override
             public void onAdvertisingIdReady(String advertisingId, boolean isLimitAdTrackingEnabled) {
@@ -84,11 +89,9 @@ public class AppSpice {
                     userTrackingListener.onTrackingEnabled();
                     isUserTrackingEnabled = true;
                     AppSpice.advertisingId = advertisingId;
-                    AppSpiceApiClient.getClient().createUser(new User("test"), new EmptyCallback<Response>());
-
+                    AppSpiceApiClient.getClient().createUser(new User(advertisingId), new EmptyCallback<Response>());
                     track("appSpice", "appStart");
                 }
-
             }
 
             @Override
@@ -97,7 +100,6 @@ public class AppSpice {
                 isUserTrackingEnabled = false;
             }
         });
-
 
     }
 
@@ -110,7 +112,7 @@ public class AppSpice {
         instance.initAppSpice(appSpiceId, appId);
     }
 
-    public static void track(Event event) {
+    private static void track(Event event) {
         if (isUserTrackingEnabled) {
             event.getData().put("userId", advertisingId);
         }
@@ -118,7 +120,11 @@ public class AppSpice {
     }
 
     public static void track(String namespace, String name) {
-        track(new Event(namespace, name));
+        track(new Event(namespace, name, appId));
+    }
+
+    public static void track(String namespace, String name, Map<String, Object> data) {
+        track(new Event(namespace, name, appId, data));
     }
 
     public static void getVariableProperties(String variable, final OnVariablePropertiesListener onVariablePropertiesListener) {
