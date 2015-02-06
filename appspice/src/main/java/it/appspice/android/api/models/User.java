@@ -7,17 +7,17 @@ import com.google.gson.annotations.Expose;
  */
 public class User {
     @Expose
-    private String advertisingId;
+    private String id;
 
-    public User(String advertisingId) {
-        this.advertisingId = advertisingId;
+    public User(String id) {
+        this.id = id;
     }
 
-    public String getAdvertisingId() {
-        return advertisingId;
+    public String getId() {
+        return id;
     }
 
-    public void setAdvertisingId(String advertisingId) {
-        this.advertisingId = advertisingId;
+    public void setId(String id) {
+        this.id = id;
     }
 }
