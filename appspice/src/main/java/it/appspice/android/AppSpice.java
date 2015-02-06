@@ -83,14 +83,14 @@ public class AppSpice {
             @Override
             public void onAdvertisingIdReady(String advertisingId, boolean isLimitAdTrackingEnabled) {
                 if (isLimitAdTrackingEnabled) {
-                    userTrackingListener.onTrackingDisabled();
                     isUserTrackingEnabled = false;
+                    userTrackingListener.onTrackingDisabled();
                 } else {
-                    userTrackingListener.onTrackingEnabled();
                     isUserTrackingEnabled = true;
                     AppSpice.advertisingId = advertisingId;
                     AppSpiceApiClient.getClient().createUser(new User(advertisingId), new EmptyCallback<Response>());
                     track("appSpice", "appStart");
+                    userTrackingListener.onTrackingEnabled();
                 }
             }
 
@@ -114,7 +114,7 @@ public class AppSpice {
 
     private static void track(Event event) {
         if (isUserTrackingEnabled) {
-            event.getData().put("userId", advertisingId);
+            event.getData().put("advertisingId", advertisingId);
         }
         AppSpiceApiClient.getClient().createEvent(event, new EmptyCallback<Response>());
     }
@@ -129,7 +129,7 @@ public class AppSpice {
 
     public static void getVariableProperties(String variable, final OnVariablePropertiesListener onVariablePropertiesListener) {
         if (isUserTrackingEnabled) {
-            AppSpiceApiClient.getClient().getVariable(variable, advertisingId, new Callback<Variable>() {
+            AppSpiceApiClient.getClient().getVariable(variable, advertisingId, appId, new Callback<Variable>() {
                 @Override
                 public void success(Variable variable, Response response) {
                     VariableProperties variableProperties = VariableProperties.fromVariable(variable);
