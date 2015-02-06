@@ -1,6 +1,5 @@
 package it.appspice.android.providers;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -22,18 +21,18 @@ public class UniqueIdProvider {
 
     public static final String TAG = "client.providers.UniqueIdProvider";
 
-    private static class ObtainAdvertisingIdTask extends AsyncTask<Void, Void, String> {
+    private static class ObtainAdvertisingIdTask extends AsyncTask<Void, Void, Info> {
 
         private Context ctx;
-        private OnAdvertisingIdAvailable listener;
+        private AdvertisingIdListener listener;
 
-        public ObtainAdvertisingIdTask(Context ctx, OnAdvertisingIdAvailable listener) {
+        public ObtainAdvertisingIdTask(Context ctx, AdvertisingIdListener listener) {
             this.ctx = ctx;
             this.listener = listener;
         }
 
         @Override
-        protected String doInBackground(Void... voids) {
+        protected Info doInBackground(Void... voids) {
             Info adInfo = null;
 
             try {
@@ -47,37 +46,32 @@ public class UniqueIdProvider {
             }
 
             if (adInfo != null) {
-                return adInfo.getId();
+                return adInfo;
             }
 
             return null;
         }
 
         @Override
-        protected void onPostExecute(String id) {
-            listener.onAdvertisingIdReady(id);
+        protected void onPostExecute(Info adInfo) {
+            listener.onAdvertisingIdReady(adInfo.getId(), adInfo.isLimitAdTrackingEnabled());
         }
     }
 
-    public static void getAdvertisingId(Context ctx, OnAdvertisingIdAvailable listener) {
+    public static void getAdvertisingId(Context ctx, AdvertisingIdListener listener) {
         ObtainAdvertisingIdTask task = new ObtainAdvertisingIdTask(ctx, listener);
 
         int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(ctx);
         if (result != ConnectionResult.SUCCESS) {
-            try {
-                GooglePlayServicesUtil.showErrorDialogFragment(result, (Activity) ctx, 0);
-            } catch (Exception e) {
-                try {
-                    GooglePlayServicesUtil.getErrorDialog(result, (Activity) ctx, 0).show();
-                } catch (Exception ex) {
-                }
-            }
+            listener.onAdvertisingIdError();
         } else {
             task.execute();
         }
     }
 
-    public interface OnAdvertisingIdAvailable {
-        void onAdvertisingIdReady(String advertisingId);
+    public interface AdvertisingIdListener {
+        void onAdvertisingIdReady(String advertisingId, boolean isLimitAdTrackingEnabled);
+
+        void onAdvertisingIdError();
     }
 }

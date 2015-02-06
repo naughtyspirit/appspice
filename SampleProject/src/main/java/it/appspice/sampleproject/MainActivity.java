@@ -2,25 +2,18 @@ package it.appspice.sampleproject;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import it.appspice.android.AppSpice;
-import it.appspice.android.api.models.Event;
+import it.appspice.android.api.models.VariableProperties;
+import it.appspice.android.listeners.OnVariablePropertiesListener;
+import it.appspice.android.listeners.UserTrackingListener;
 
 /**
- * Author: Atanas Dimitrov <seishin90@yandex.ru>
- * Created on: 19/Aug/2014
+ * Created by Naughty Spirit <hi@naughtyspirit.co>
+ * on 2/6/15.
  */
 public class MainActivity extends Activity {
 
@@ -29,13 +22,29 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        AppSpice.setUserTrackingPreferenceListener(new UserTrackingListener() {
+            @Override
+            public void onTrackingEnabled() {
+
+            }
+
+            @Override
+            public void onTrackingDisabled() {
+
+            }
+        });
         AppSpice.init(this);
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("hi", "hello");
 //
 //        AppSpice.track(new Event("Sample", "AppStart", data));
 
-        AppSpice.getVariable("newsTextView");
+        AppSpice.getVariableProperties("newsTextView", new OnVariablePropertiesListener() {
+            @Override
+            public void onPropertiesReady(VariableProperties variableProperties) {
+
+            }
+        });
 
         Button btn = (Button) findViewById(R.id.start_second_activity);
         btn.setOnClickListener(new View.OnClickListener() {

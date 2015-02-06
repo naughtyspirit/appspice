@@ -4,8 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.util.HashMap;
-
 import it.appspice.android.api.AppSpiceApiClient;
 import it.appspice.android.api.Callback;
 import it.appspice.android.api.EmptyCallback;
@@ -15,10 +13,14 @@ import it.appspice.android.api.models.Variable;
 import it.appspice.android.api.models.VariableProperties;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.MetaDataHelper;
+import it.appspice.android.listeners.OnVariablePropertiesListener;
+import it.appspice.android.listeners.UserTrackingListener;
+import it.appspice.android.providers.UniqueIdProvider;
 import retrofit.client.Response;
 
 /**
- * Created by nmp on 12/11/14.
+ * Created by Naughty Spirit <hi@naughtyspirit.co>
+ * on 2/6/15.
  */
 public class AppSpice {
     private static final String TAG = AppSpice.class.getSimpleName();
@@ -26,6 +28,20 @@ public class AppSpice {
     private Context context;
 
     private static AppSpice instance;
+
+    private static UserTrackingListener userTrackingListener = new UserTrackingListener() {
+        @Override
+        public void onTrackingEnabled() {
+        }
+
+        @Override
+        public void onTrackingDisabled() {
+        }
+    };
+
+    private static boolean isUserTrackingEnabled = true;
+
+    private static String advertisingId;
 
     private AppSpice(Context context) {
         this.context = context;
@@ -58,12 +74,31 @@ public class AppSpice {
             return;
         }
 
-        AppSpiceApiClient.getClient().createUser(new User("test"), new EmptyCallback<Response>());
+        UniqueIdProvider.getAdvertisingId(context, new UniqueIdProvider.AdvertisingIdListener() {
+            @Override
+            public void onAdvertisingIdReady(String advertisingId, boolean isLimitAdTrackingEnabled) {
+                if (isLimitAdTrackingEnabled) {
+                    userTrackingListener.onTrackingDisabled();
+                    isUserTrackingEnabled = false;
+                } else {
+                    userTrackingListener.onTrackingEnabled();
+                    isUserTrackingEnabled = true;
+                    AppSpice.advertisingId = advertisingId;
+                    AppSpiceApiClient.getClient().createUser(new User("test"), new EmptyCallback<Response>());
 
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("userId", "test");
+                    track("appSpice", "appStart");
+                }
 
-        AppSpiceApiClient.getClient().createEvent(new Event("appSpice", "appStart", data), new EmptyCallback<Response>());
+            }
+
+            @Override
+            public void onAdvertisingIdError() {
+                userTrackingListener.onTrackingDisabled();
+                isUserTrackingEnabled = false;
+            }
+        });
+
+
     }
 
     public static void init(Context appContext) {
@@ -76,20 +111,30 @@ public class AppSpice {
     }
 
     public static void track(Event event) {
+        if (isUserTrackingEnabled) {
+            event.getData().put("userId", advertisingId);
+        }
         AppSpiceApiClient.getClient().createEvent(event, new EmptyCallback<Response>());
     }
 
     public static void track(String namespace, String name) {
-        AppSpiceApiClient.getClient().createEvent(new Event(namespace, name), new EmptyCallback<Response>());
+        track(new Event(namespace, name));
     }
 
-    public static void getVariable(String variable) {
-        AppSpiceApiClient.getClient().getVariable(variable, "54cf8542bb98aa9a7ae778ba", new Callback<Variable>() {
-            @Override
-            public void success(Variable variable, Response response) {
-                VariableProperties variableProperties = VariableProperties.fromVariable(variable);
-                Log.d("Response", variableProperties.get("color") + "");
-            }
-        });
+    public static void getVariableProperties(String variable, final OnVariablePropertiesListener onVariablePropertiesListener) {
+        if (isUserTrackingEnabled) {
+            AppSpiceApiClient.getClient().getVariable(variable, advertisingId, new Callback<Variable>() {
+                @Override
+                public void success(Variable variable, Response response) {
+                    VariableProperties variableProperties = VariableProperties.fromVariable(variable);
+                    onVariablePropertiesListener.onPropertiesReady(variableProperties);
+                }
+            });
+        }
     }
+
+    public static void setUserTrackingPreferenceListener(UserTrackingListener listener) {
+        userTrackingListener = listener;
+    }
+
 }
