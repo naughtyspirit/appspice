@@ -9,7 +9,6 @@ import android.widget.Button;
 import it.appspice.android.AppSpice;
 import it.appspice.android.api.models.VariableProperties;
 import it.appspice.android.listeners.OnVariablePropertiesListener;
-import it.appspice.android.listeners.UserTrackingListener;
 
 /**
  * Created by Naughty Spirit <hi@naughtyspirit.co>
@@ -22,17 +21,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AppSpice.setUserTrackingPreferenceListener(new UserTrackingListener() {
-            @Override
-            public void onTrackingEnabled() {
-
-            }
-
-            @Override
-            public void onTrackingDisabled() {
-
-            }
-        });
         AppSpice.init(this);
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("hi", "hello");
@@ -54,7 +42,6 @@ public class MainActivity extends Activity {
                 startActivity(i);
             }
         });
-
 
 
 //        Color newsletter_title_color = AppSpice.getColor("newsletter_title_color");
