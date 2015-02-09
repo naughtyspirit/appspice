@@ -3,12 +3,18 @@ package it.appspice.sampleproject;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.squareup.otto.Subscribe;
+
 import it.appspice.android.AppSpice;
-import it.appspice.android.api.models.VariableProperties;
-import it.appspice.android.listeners.OnVariablePropertiesListener;
+
+class RateDialog {
+    int appRun;
+    String showLocation;
+}
 
 /**
  * Created by Naughty Spirit <hi@naughtyspirit.co>
@@ -21,18 +27,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AppSpice.init(this);
+        AppSpice.init(this, "enter here", "54d4a61f6275f00300b032d9");
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("hi", "hello");
 //
 //        AppSpice.track(new Event("Sample", "AppStart", data));
 
-        AppSpice.getVariableProperties("newsTextView", new OnVariablePropertiesListener() {
-            @Override
-            public void onPropertiesReady(VariableProperties variableProperties) {
-
-            }
-        });
+        AppSpice.getVariableProperties("rateDialog", RateDialog.class);
 
         Button btn = (Button) findViewById(R.id.start_second_activity);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -57,7 +58,19 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+        AppSpice.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppSpice.onPause(this);
+    }
+
+    @Subscribe
+    public void onRateDialogReceived(RateDialog rateDialog) {
+        Log.d("AppSpice", rateDialog.showLocation);
     }
 }

@@ -4,21 +4,28 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.squareup.otto.Bus;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Map;
 
-import it.appspice.android.api.AppSpiceApiClient;
-import it.appspice.android.api.Callback;
-import it.appspice.android.api.EmptyCallback;
 import it.appspice.android.api.models.Event;
 import it.appspice.android.api.models.User;
-import it.appspice.android.api.models.Variable;
-import it.appspice.android.api.models.VariableProperties;
+import it.appspice.android.api.request.PostGsonRequest;
+import it.appspice.android.api.response.EmptyResponseHandler;
+import it.appspice.android.api.response.ErrorHandler;
 import it.appspice.android.helpers.Constants;
 import it.appspice.android.helpers.MetaDataHelper;
 import it.appspice.android.listeners.AdvertisingIdListener;
-import it.appspice.android.listeners.OnVariablePropertiesListener;
 import it.appspice.android.providers.AdvertisingIdProvider;
-import retrofit.client.Response;
 
 /**
  * Created by Naughty Spirit <hi@naughtyspirit.co>
@@ -27,12 +34,17 @@ import retrofit.client.Response;
 public class AppSpice {
     private static final String TAG = AppSpice.class.getSimpleName();
     private static String appId;
+    private static String defaultNamespace;
 
     private Context context;
 
     private static AppSpice instance;
 
     private static String advertisingId;
+
+    private static RequestQueue requestQueue;
+
+    private static Bus eventBus = new Bus();
 
     private AppSpice(Context context) {
         this.context = context;
@@ -41,8 +53,19 @@ public class AppSpice {
     private static void newInstance(Context context) {
         if (instance == null) {
             instance = new AppSpice(context);
+            instance.context = context;
+            requestQueue = Volley.newRequestQueue(context);
+            requestQueue.stop();
+            defaultNamespace = context.getPackageName();
         }
-        instance.context = context;
+    }
+
+    public static void onResume(Context context) {
+        eventBus.register(context);
+    }
+
+    public static void onPause(Context context) {
+        eventBus.unregister(context);
     }
 
     /**
@@ -70,8 +93,10 @@ public class AppSpice {
             @Override
             public void onAdvertisingIdReady(String advertisingId, boolean _) {
                 AppSpice.advertisingId = advertisingId;
-                AppSpiceApiClient.getClient().createUser(new User(advertisingId), new EmptyCallback<Response>());
+                User user = new User(advertisingId);
+                requestQueue.add(new PostGsonRequest<>(Constants.API_ENDPOINT + "/users", user, Object.class, new EmptyResponseHandler<>(), new ErrorHandler(eventBus)));
                 track("appSpice", "appStart");
+                requestQueue.start();
             }
 
             @Override
@@ -89,7 +114,11 @@ public class AppSpice {
 
     private static void track(Event event) {
         event.getData().put("advertisingId", advertisingId);
-        AppSpiceApiClient.getClient().createEvent(event, new EmptyCallback<Response>());
+        requestQueue.add(new PostGsonRequest<>(Constants.API_ENDPOINT + "/events", event, Object.class, new EmptyResponseHandler<>(), new ErrorHandler(eventBus)));
+    }
+
+    public static void track(String name) {
+        track(new Event(defaultNamespace, name, appId));
     }
 
     public static void track(String namespace, String name) {
@@ -100,13 +129,21 @@ public class AppSpice {
         track(new Event(namespace, name, appId, data));
     }
 
-    public static void getVariableProperties(String variable, final OnVariablePropertiesListener onVariablePropertiesListener) {
-        AppSpiceApiClient.getClient().getVariable(variable, advertisingId, appId, new Callback<Variable>() {
+    public static <T> void getVariableProperties(String variable, final Class<T> clazz) {
+        String url = String.format(Constants.API_ENDPOINT + "/variables/%s?appId=%s&userId=%s",
+                variable,
+                appId, advertisingId);
+        requestQueue.add(new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
-            public void success(Variable variable, Response response) {
-                VariableProperties variableProperties = VariableProperties.fromVariable(variable);
-                onVariablePropertiesListener.onPropertiesReady(variableProperties);
+            public void onResponse(JSONObject response) {
+                try {
+                    Gson gson = new Gson();
+                    T value = gson.fromJson(response.getJSONObject("value").toString(), clazz);
+                    eventBus.post(value);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        });
+        }, new ErrorHandler(eventBus)));
     }
 }
