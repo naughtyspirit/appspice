@@ -2,6 +2,8 @@ package it.appspice.android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 
 import com.squareup.otto.Bus;
@@ -30,7 +32,7 @@ public class AppSpice {
 
     private static String appId;
     private static String appSpiceId;
-    private static String defaultNamespace;
+    private static String appNamespace;
 
     private final Bus eventBus = new Bus();
 
@@ -44,7 +46,7 @@ public class AppSpice {
         }
         apiClient = new ApiClient(context, eventBus, appId);
         this.context = context;
-        defaultNamespace = context.getPackageName();
+        appNamespace = context.getPackageName();
 
         AppSpice.appSpiceId = appSpiceId;
         AppSpice.appId = appId;
@@ -59,19 +61,53 @@ public class AppSpice {
     }
 
     public static void onStart(Activity activity) {
+        String activityName = activity.getClass().getSimpleName();
         track("activityStart");
     }
 
     public static void onStop(Activity activity) {
-        track("activityStop");
+        String activityName = activity.getClass().getSimpleName();
+        track(createEvent("activityStop").put("activity", activityName));
     }
 
+    private static Event createEvent(String name) {
+        return new Event(appNamespace, name, appId);
+    }
+
+    static class OnBackStackChangeListener implements FragmentManager.OnBackStackChangedListener {
+
+        private final Activity activity;
+
+        OnBackStackChangeListener(Activity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        public void onBackStackChanged() {
+            FragmentActivity fragmentActivity = (FragmentActivity) activity;
+            FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
+            FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1);
+            String tag = backStackEntry.getName();
+            String fragmentName = fragmentManager.findFragmentByTag(tag).getClass().getSimpleName();
+            track(createEvent("fragmentStart").put("fragment", fragmentName));
+        }
+    }
+
+    private FragmentManager.OnBackStackChangedListener onBackStackChangedListener;
+
     public static void onResume(Activity activity) {
+        if (activity instanceof FragmentActivity) {
+            instance.onBackStackChangedListener = new OnBackStackChangeListener(activity);
+        }
         instance.eventBus.register(activity);
     }
 
     public static void onPause(Activity activity) {
         instance.eventBus.unregister(activity);
+        if (activity instanceof FragmentActivity) {
+            FragmentActivity fragmentActivity = (FragmentActivity) activity;
+            fragmentActivity.getSupportFragmentManager().removeOnBackStackChangedListener(instance.onBackStackChangedListener);
+        }
     }
 
     /**
@@ -115,7 +151,7 @@ public class AppSpice {
     }
 
     public static void track(String name) {
-        track(new Event(defaultNamespace, name, appId));
+        track(new Event(appNamespace, name, appId));
     }
 
     public static void track(String namespace, String name) {

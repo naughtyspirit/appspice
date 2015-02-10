@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '20.0.0'
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId 'it.appspice.sampleproject'
-        minSdkVersion 9
-        targetSdkVersion 19
+        minSdkVersion 15
+        targetSdkVersion 21
         versionCode 5
         versionName '1.4'
     }
@@ -20,6 +20,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:20.0.0'
+    compile 'com.android.support:appcompat-v7:21.0.+'
     compile project(':appspice')
 }
