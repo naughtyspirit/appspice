@@ -5,6 +5,8 @@ import com.google.gson.annotations.Expose;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.appspice.android.AppSpice;
+
 /**
  * Created by Naughty Spirit
  * on 1/28/15.
@@ -22,7 +24,7 @@ public class Event {
         this(namespace, name, source, new HashMap<String, Object>());
     }
 
-    public Event put(String key, Object value) {
+    public Event with(String key, Object value) {
         data.put(key, value);
         return this;
     }
@@ -37,6 +39,10 @@ public class Event {
 
     public String getNamespace() {
         return namespace;
+    }
+
+    public void track() {
+        AppSpice.track(this);
     }
 
     @Expose

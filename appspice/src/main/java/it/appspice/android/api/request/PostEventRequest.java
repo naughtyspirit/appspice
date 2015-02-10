@@ -17,7 +17,7 @@ public class PostEventRequest implements HaltedApiRequest {
 
     @Override
     public void populateFrom(RequestParameterProvider provider) {
-        event.put("userId", provider.getAdvertisingId());
+        event.with("userId", provider.getAdvertisingId());
     }
 
     @Override

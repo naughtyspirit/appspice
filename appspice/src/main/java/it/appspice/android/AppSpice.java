@@ -39,7 +39,6 @@ public class AppSpice {
 
     private final Bus eventBus = new Bus();
 
-
     private AppSpice(Context context, String appSpiceId, String appId) {
         if (TextUtils.isEmpty(appSpiceId)) {
             throw new IllegalArgumentException("AppSpice is feeling lost without it's ID");
@@ -50,7 +49,6 @@ public class AppSpice {
         apiClient = new ApiClient(context, eventBus, appId);
         this.context = context;
         appNamespace = context.getPackageName();
-
         AppSpice.appSpiceId = appSpiceId;
         AppSpice.appId = appId;
         requestAdvertisingId();
@@ -65,15 +63,15 @@ public class AppSpice {
 
     public static void onStart(Activity activity) {
         String activityName = activity.getClass().getSimpleName();
-        track(createEvent("activityStart").put("activity", activityName));
+        track(createEvent("activityStart").with("activity", activityName));
     }
 
     public static void onStop(Activity activity) {
         String activityName = activity.getClass().getSimpleName();
-        track(createEvent("activityStop").put("activity", activityName));
+        track(createEvent("activityStop").with("activity", activityName));
     }
 
-    private static Event createEvent(String name) {
+    public static Event createEvent(String name) {
         return new Event(appNamespace, name, appId);
     }
 
@@ -92,7 +90,7 @@ public class AppSpice {
             FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1);
             String tag = backStackEntry.getName();
             String fragmentName = fragmentManager.findFragmentByTag(tag).getClass().getSimpleName();
-            track(createEvent("fragmentStart").put("fragment", fragmentName));
+            track(createEvent("fragmentStart").with("fragment", fragmentName));
         }
     }
 
@@ -149,7 +147,7 @@ public class AppSpice {
         instance = getInstance(appContext, appSpiceId, appId);
     }
 
-    private static void track(Event event) {
+    public static void track(Event event) {
         instance.apiClient.createEvent(event);
     }
 
@@ -165,7 +163,7 @@ public class AppSpice {
         track(new Event(namespace, name, appId, data));
     }
 
-    public static <T> void getVariable(final String name, final Class<T> clazz) {
+    public static <T> void requestVariable(final String name, final Class<T> clazz) {
         instance.apiClient.getVariable(name, appId, clazz);
     }
 }

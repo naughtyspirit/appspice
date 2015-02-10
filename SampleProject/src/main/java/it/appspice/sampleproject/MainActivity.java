@@ -3,7 +3,6 @@ package it.appspice.sampleproject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +10,8 @@ import android.widget.Button;
 import com.squareup.otto.Subscribe;
 
 import it.appspice.android.AppSpice;
+
+import static it.appspice.android.AppSpice.createEvent;
 
 class RateDialog {
     int appRun;
@@ -30,11 +31,11 @@ public class MainActivity extends FragmentActivity {
 
         AppSpice.init(this, "enter here", "54d4a61f6275f00300b032d9");
 //        Map<String, Object> data = new HashMap<>();
-//        data.put("hi", "hello");
+//        data.with("hi", "hello");
 //
 //        AppSpice.track(new Event("Sample", "AppStart", data));
 
-        AppSpice.getVariable("rateDialog", RateDialog.class);
+        AppSpice.requestVariable("rateDialog", RateDialog.class);
 
         Button btn = (Button) findViewById(R.id.start_second_activity);
         btn.setOnClickListener(new View.OnClickListener() {
