@@ -2,12 +2,9 @@ package it.appspice.android.providers;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import it.appspice.android.listeners.AdvertisingIdListener;
 
@@ -17,14 +14,15 @@ import it.appspice.android.listeners.AdvertisingIdListener;
  */
 public class AdvertisingIdProvider {
 
-    public static final String TAG = "UniqueIdProvider";
+    public static final String TAG = AdvertisingIdProvider.class.getSimpleName();
 
-    private static class ObtainAdvertisingIdTask extends AsyncTask<Void, Void, Info> {
+    private static class GetAdvertisingIdTask extends AsyncTask<Void, Void, Info> {
 
         private Context ctx;
         private AdvertisingIdListener listener;
+        private Throwable error;
 
-        public ObtainAdvertisingIdTask(Context ctx, AdvertisingIdListener listener) {
+        public GetAdvertisingIdTask(Context ctx, AdvertisingIdListener listener) {
             this.ctx = ctx;
             this.listener = listener;
         }
@@ -36,7 +34,7 @@ public class AdvertisingIdProvider {
             try {
                 adInfo = AdvertisingIdClient.getAdvertisingIdInfo(ctx);
             } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
+                error = e;
             }
 
             return adInfo;
@@ -44,8 +42,8 @@ public class AdvertisingIdProvider {
 
         @Override
         protected void onPostExecute(Info adInfo) {
-            if (adInfo == null) {
-                listener.onAdvertisingIdError();
+            if (error != null) {
+                listener.onAdvertisingIdError(error);
             } else {
                 listener.onAdvertisingIdReady(adInfo.getId(), adInfo.isLimitAdTrackingEnabled());
             }
@@ -53,13 +51,8 @@ public class AdvertisingIdProvider {
     }
 
     public static void get(Context ctx, AdvertisingIdListener listener) {
-        ObtainAdvertisingIdTask task = new ObtainAdvertisingIdTask(ctx, listener);
-        int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(ctx);
-        if (result != ConnectionResult.SUCCESS) {
-            listener.onAdvertisingIdError();
-        } else {
-            task.execute();
-        }
+        GetAdvertisingIdTask task = new GetAdvertisingIdTask(ctx, listener);
+        task.execute();
     }
 
 }

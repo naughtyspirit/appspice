@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
 //
 //        AppSpice.track(new Event("Sample", "AppStart", data));
 
-        AppSpice.getVariableProperties("rateDialog", RateDialog.class);
+        AppSpice.getVariable("rateDialog", RateDialog.class);
 
         Button btn = (Button) findViewById(R.id.start_second_activity);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -55,6 +55,18 @@ public class MainActivity extends Activity {
 //            }
 //        }
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        AppSpice.onStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AppSpice.onStop(this);
     }
 
     @Override

@@ -22,6 +22,11 @@ public class Event {
         this(namespace, name, source, new HashMap<String, Object>());
     }
 
+    public Event put(String key, Object value) {
+        data.put(key, value);
+        return this;
+    }
+
     public String getName() {
         return name;
     }

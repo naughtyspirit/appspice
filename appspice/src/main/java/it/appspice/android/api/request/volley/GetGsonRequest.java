@@ -1,4 +1,4 @@
-package it.appspice.android.api.request;
+package it.appspice.android.api.request.volley;
 
 /**
  * Created by Naughty Spirit <hi@naughtyspirit.co>

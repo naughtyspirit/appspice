@@ -1,4 +1,4 @@
-package it.appspice.android.api.request;
+package it.appspice.android.api.request.volley;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;

@@ -7,5 +7,5 @@ package it.appspice.android.listeners;
 public interface AdvertisingIdListener {
     void onAdvertisingIdReady(String advertisingId, boolean isLimitAdTrackingEnabled);
 
-    void onAdvertisingIdError();
+    void onAdvertisingIdError(Throwable error);
 }
