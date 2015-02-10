@@ -2,16 +2,19 @@ package it.appspice.android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 
 import com.squareup.otto.Bus;
 
+import java.util.Locale;
 import java.util.Map;
 
 import it.appspice.android.api.ApiClient;
 import it.appspice.android.api.errors.AppSpiceError;
+import it.appspice.android.api.models.Device;
 import it.appspice.android.api.models.Event;
 import it.appspice.android.api.models.User;
 import it.appspice.android.helpers.Constants;
@@ -62,7 +65,7 @@ public class AppSpice {
 
     public static void onStart(Activity activity) {
         String activityName = activity.getClass().getSimpleName();
-        track("activityStart");
+        track(createEvent("activityStart").put("activity", activityName));
     }
 
     public static void onStop(Activity activity) {
@@ -127,7 +130,7 @@ public class AppSpice {
             @Override
             public void onAdvertisingIdReady(String advertisingId, boolean _) {
                 apiClient.setAdvertisingId(advertisingId);
-                User user = new User(advertisingId);
+                User user = new User(advertisingId, Locale.getDefault().getCountry(), Locale.getDefault().getLanguage(), new Device("Android", Build.VERSION.RELEASE, Build.MODEL));
                 apiClient.createUser(user);
                 track("appStart");
                 apiClient.start();

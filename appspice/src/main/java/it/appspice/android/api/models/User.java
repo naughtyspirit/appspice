@@ -8,9 +8,18 @@ import com.google.gson.annotations.Expose;
 public class User {
     @Expose
     private String id;
+    @Expose
+    private final String country;
+    @Expose
+    private final String language;
+    @Expose
+    private Device device;
 
-    public User(String id) {
+    public User(String id, String country, String language, Device device) {
         this.id = id;
+        this.country = country;
+        this.language = language;
+        this.device = device;
     }
 
     public String getId() {
