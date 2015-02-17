@@ -1,6 +1,7 @@
 package it.appspice.android.api;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,12 +18,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import it.appspice.android.api.errors.AppSpiceError;
+import it.appspice.android.api.errors.VersionNameNotFoundError;
 import it.appspice.android.api.models.Event;
 import it.appspice.android.api.models.User;
 import it.appspice.android.api.request.GetVariableRequest;
 import it.appspice.android.api.request.HaltedApiRequest;
 import it.appspice.android.api.request.PostEventRequest;
-import it.appspice.android.api.request.RequestParameterProvider;
 import it.appspice.android.api.request.volley.PostGsonRequest;
 import it.appspice.android.api.response.EmptyResponseHandler;
 import it.appspice.android.api.response.ErrorHandler;
@@ -32,9 +33,10 @@ import it.appspice.android.helpers.Constants;
  * Created by Naughty Spirit <hi@naughtyspirit.co>
  * on 2/10/15.
  */
-public class ApiClient implements RequestParameterProvider {
+public class ApiClient {
 
     private static RequestQueue requestQueue;
+    private Context context;
     private final Bus eventBus;
     private final String appId;
     private String advertisingId;
@@ -43,6 +45,7 @@ public class ApiClient implements RequestParameterProvider {
     private boolean isStarted = false;
 
     public ApiClient(Context context, Bus eventBus, String appId) {
+        this.context = context;
         this.eventBus = eventBus;
         this.appId = appId;
         requestQueue = Volley.newRequestQueue(context);
@@ -54,15 +57,24 @@ public class ApiClient implements RequestParameterProvider {
         requestQueue.add(new PostGsonRequest<>(Constants.API_ENDPOINT + "/users", user, Object.class, new EmptyResponseHandler<>(), new ErrorHandler(eventBus)));
     }
 
-    public void createEvent(Event event) {
+    public void createEvent(Event event){
         if (isStarted) {
+            event.with("userId", advertisingId);
+            String versionName = null;
+            try {
+                versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                eventBus.post(new VersionNameNotFoundError("Application version name can not be found from the context", e));
+            }
+            event.with("version", versionName);
+
             requestQueue.add(new PostGsonRequest<>(Constants.API_ENDPOINT + "/events", event, Object.class, new EmptyResponseHandler<>(), new ErrorHandler(eventBus)));
         } else {
             apiRequests.add(new PostEventRequest(event));
         }
     }
 
-    public <T> void getVariable(final String name, String appId, final Class<T> clazz) {
+    public <T> void getVariable(final String name, final Class<T> clazz) {
         if (isStarted) {
             String url = String.format(Constants.API_ENDPOINT + "/variables/%s?appId=%s&userId=%s", name, appId, advertisingId);
             requestQueue.add(new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -78,30 +90,19 @@ public class ApiClient implements RequestParameterProvider {
                 }
             }, new ErrorHandler(eventBus)));
         } else {
-            apiRequests.add(new GetVariableRequest<T>(name, appId, clazz));
+            apiRequests.add(new GetVariableRequest<T>(name, clazz));
         }
     }
 
     public void start() {
         isStarted = true;
         for (HaltedApiRequest request : apiRequests) {
-            request.populateFrom(this);
             request.executeFrom(this);
         }
         requestQueue.start();
     }
 
-    @Override
-    public String getAdvertisingId() {
-        return advertisingId;
-    }
-
     public void setAdvertisingId(String advertisingId) {
         this.advertisingId = advertisingId;
-    }
-
-    @Override
-    public String getAppId() {
-        return appId;
     }
 }

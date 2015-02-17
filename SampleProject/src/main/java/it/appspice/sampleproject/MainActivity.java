@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.squareup.otto.Subscribe;
 
 import it.appspice.android.AppSpice;
+import it.appspice.android.api.errors.VersionNameNotFoundError;
 
 import static it.appspice.android.AppSpice.createEvent;
 
@@ -94,4 +95,5 @@ public class MainActivity extends FragmentActivity {
     public void onRateDialogReceived(RateDialog rateDialog) {
         Log.d("AppSpice", rateDialog.showLocation);
     }
+
 }

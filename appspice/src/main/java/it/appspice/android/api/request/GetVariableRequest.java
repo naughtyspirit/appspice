@@ -9,20 +9,14 @@ import it.appspice.android.api.ApiClient;
 public class GetVariableRequest<T> implements HaltedApiRequest {
     private final String name;
     private final Class<T> clazz;
-    private String appId;
 
-    public GetVariableRequest(String name, String appId, Class<T> clazz) {
+    public GetVariableRequest(String name, Class<T> clazz) {
         this.name = name;
-        this.appId = appId;
         this.clazz = clazz;
     }
 
     @Override
-    public void populateFrom(RequestParameterProvider provider) {
-    }
-
-    @Override
     public void executeFrom(ApiClient apiClient) {
-        apiClient.getVariable(name, appId, clazz);
+        apiClient.getVariable(name, clazz);
     }
 }

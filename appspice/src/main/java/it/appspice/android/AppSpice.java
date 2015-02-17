@@ -164,6 +164,6 @@ public class AppSpice {
     }
 
     public static <T> void requestVariable(final String name, final Class<T> clazz) {
-        instance.apiClient.getVariable(name, appId, clazz);
+        instance.apiClient.getVariable(name, clazz);
     }
 }
