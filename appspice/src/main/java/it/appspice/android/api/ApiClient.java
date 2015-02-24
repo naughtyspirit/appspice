@@ -54,10 +54,11 @@ public class ApiClient {
     }
 
     public void createUser(User user) {
-        requestQueue.add(new PostGsonRequest<>(Constants.API_ENDPOINT + "/users", user, Object.class, new EmptyResponseHandler<>(), new ErrorHandler(eventBus)));
+        String url = String.format(Constants.API_ENDPOINT + "/users?appId=%s", appId);
+        requestQueue.add(new PostGsonRequest<>(url, user, Object.class, new EmptyResponseHandler<>(), new ErrorHandler(eventBus)));
     }
 
-    public void createEvent(Event event){
+    public void createEvent(Event event) {
         if (isStarted) {
             event.with("userId", advertisingId);
             String versionName = null;
@@ -67,8 +68,8 @@ public class ApiClient {
                 eventBus.post(new VersionNameNotFoundError("Application version name can not be found from the context", e));
             }
             event.with("version", versionName);
-
-            requestQueue.add(new PostGsonRequest<>(Constants.API_ENDPOINT + "/events", event, Object.class, new EmptyResponseHandler<>(), new ErrorHandler(eventBus)));
+            String url = String.format(Constants.API_ENDPOINT + "/events?appId=%s", appId);
+            requestQueue.add(new PostGsonRequest<>(url, event, Object.class, new EmptyResponseHandler<>(), new ErrorHandler(eventBus)));
         } else {
             apiRequests.add(new PostEventRequest(event));
         }
@@ -76,7 +77,7 @@ public class ApiClient {
 
     public <T> void getVariable(final String name, final Class<T> clazz) {
         if (isStarted) {
-            String url = String.format(Constants.API_ENDPOINT + "/variables/%s?appId=%s&userId=%s", name, appId, advertisingId);
+            String url = String.format(Constants.API_ENDPOINT + "/variables/%s?userId=%s&appId=%s", name, advertisingId, appId);
             requestQueue.add(new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

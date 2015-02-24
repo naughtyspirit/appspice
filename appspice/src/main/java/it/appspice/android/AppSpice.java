@@ -27,36 +27,30 @@ import it.appspice.android.providers.AdvertisingIdProvider;
  * on 2/6/15.
  */
 public class AppSpice {
-    private static final String TAG = AppSpice.class.getSimpleName();
 
     private final ApiClient apiClient;
     private Context context;
     private static AppSpice instance;
 
     private static String appId;
-    private static String appSpiceId;
     private static String appNamespace;
 
     private final Bus eventBus = new Bus();
 
-    private AppSpice(Context context, String appSpiceId, String appId) {
-        if (TextUtils.isEmpty(appSpiceId)) {
-            throw new IllegalArgumentException("AppSpice is feeling lost without it's ID");
-        }
+    private AppSpice(Context context, String appId) {
         if (TextUtils.isEmpty(appId)) {
-            throw new IllegalArgumentException("AppSpice is feeling lonely without APP ID");
+            throw new IllegalArgumentException("AppSpice is feeling lonely without it's key");
         }
         apiClient = new ApiClient(context, eventBus, appId);
         this.context = context;
         appNamespace = context.getPackageName();
-        AppSpice.appSpiceId = appSpiceId;
         AppSpice.appId = appId;
         requestAdvertisingId();
     }
 
-    private static AppSpice getInstance(Context context, String appSpiceId, String appId) {
+    private static AppSpice getInstance(Context context, String appId) {
         if (instance == null) {
-            instance = new AppSpice(context, appSpiceId, appId);
+            instance = new AppSpice(context, appId);
         }
         return instance;
     }
@@ -112,14 +106,13 @@ public class AppSpice {
     }
 
     /**
-     * Initializing the AppSpice SDK with providing AppSpiceId and AppId in the constructor.
+     * Initializing the AppSpice SDK with appId
      *
      * @param appContext Application's Context
-     * @param appSpiceId Developer's appSpiceId
      * @param appId      Application's appId
      */
-    public static void init(Context appContext, String appSpiceId, String appId) {
-        instance = getInstance(appContext, appSpiceId, appId);
+    public static void init(Context appContext, String appId) {
+        instance = getInstance(appContext, appId);
     }
 
     private void requestAdvertisingId() {
@@ -141,10 +134,14 @@ public class AppSpice {
         });
     }
 
+    /**
+     * Initializing the AppSpice SDK with appId from the AndroidManifest
+     *
+     * @param appContext Application's Context
+     */
     public static void init(Context appContext) {
-        String appSpiceId = MetaDataHelper.getMetaData(appContext, Constants.KEY_APP_SPICE_ID);
-        String appId = MetaDataHelper.getMetaData(appContext, Constants.KEY_APP_ID);
-        instance = getInstance(appContext, appSpiceId, appId);
+        String appId = MetaDataHelper.getMetaData(appContext, Constants.KEY_APP_SPICE_APP_ID);
+        instance = getInstance(appContext, appId);
     }
 
     public static void track(Event event) {

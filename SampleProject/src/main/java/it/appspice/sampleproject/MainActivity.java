@@ -10,9 +10,6 @@ import android.widget.Button;
 import com.squareup.otto.Subscribe;
 
 import it.appspice.android.AppSpice;
-import it.appspice.android.api.errors.VersionNameNotFoundError;
-
-import static it.appspice.android.AppSpice.createEvent;
 
 class RateDialog {
     int appRun;
@@ -30,7 +27,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AppSpice.init(this, "enter here", "54d4a61f6275f00300b032d9");
+        AppSpice.init(this, SampleConstants.APP_SPICE_APP_ID);
 //        Map<String, Object> data = new HashMap<>();
 //        data.with("hi", "hello");
 //
