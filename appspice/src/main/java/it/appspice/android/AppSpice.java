@@ -39,7 +39,7 @@ public class AppSpice {
 
     private AppSpice(Context context, String appId) {
         if (TextUtils.isEmpty(appId)) {
-            throw new IllegalArgumentException("AppSpice is feeling lonely without it's key");
+            throw new IllegalArgumentException("AppSpice is feeling lonely without it's app id");
         }
         apiClient = new ApiClient(context, eventBus, appId);
         this.context = context;
