@@ -32,7 +32,6 @@ public class AppSpice {
     private Context context;
     private static AppSpice instance;
 
-    private static String appId;
     private static String appNamespace;
 
     private final Bus eventBus = new Bus();
@@ -44,7 +43,6 @@ public class AppSpice {
         apiClient = new ApiClient(context, eventBus, appId);
         this.context = context;
         appNamespace = context.getPackageName();
-        AppSpice.appId = appId;
         requestAdvertisingId();
     }
 
@@ -66,7 +64,7 @@ public class AppSpice {
     }
 
     public static Event createEvent(String name) {
-        return new Event(appNamespace, name, appId);
+        return new Event(appNamespace, name);
     }
 
     static class OnBackStackChangeListener implements FragmentManager.OnBackStackChangedListener {
@@ -149,15 +147,15 @@ public class AppSpice {
     }
 
     public static void track(String name) {
-        track(new Event(appNamespace, name, appId));
+        track(new Event(appNamespace, name));
     }
 
     public static void track(String namespace, String name) {
-        track(new Event(namespace, name, appId));
+        track(new Event(namespace, name));
     }
 
     public static void track(String namespace, String name, Map<String, Object> data) {
-        track(new Event(namespace, name, appId, data));
+        track(new Event(namespace, name, data));
     }
 
     public static <T> void requestVariable(final String name, final Class<T> clazz) {

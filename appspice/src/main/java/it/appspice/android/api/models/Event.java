@@ -13,15 +13,14 @@ import it.appspice.android.AppSpice;
  */
 public class Event {
 
-    public Event(String namespace, String name, String source, Map<String, Object> data) {
+    public Event(String namespace, String name, Map<String, Object> data) {
         this.namespace = namespace;
         this.name = name;
-        this.source = source;
         this.data = data;
     }
 
-    public Event(String namespace, String name, String source) {
-        this(namespace, name, source, new HashMap<String, Object>());
+    public Event(String namespace, String name) {
+        this(namespace, name, new HashMap<String, Object>());
     }
 
     public Event with(String key, Object value) {
@@ -50,11 +49,5 @@ public class Event {
     @Expose
     private String name;
     @Expose
-    private String source;
-    @Expose
     private Map<String, Object> data;
-
-    public String getSource() {
-        return source;
-    }
 }
